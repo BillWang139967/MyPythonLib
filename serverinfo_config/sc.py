@@ -32,7 +32,7 @@ def raw_loadconfig(filepath, return_sort=False, delimiter='=', quoter=' "\'', ov
 
 #}}}
 #{{{raw_saveconfig
-def raw_saveconfig(filepath, config, sortlist=[], delimiter='=', quoter='"'):
+def raw_saveconfig(filepath, config, sortlist=[], delimiter='=', quoter=''):
     """Write config to file.
     """
     if not os.path.exists(filepath): return False
@@ -70,7 +70,7 @@ def loadconfig(filepath, keymap, delimiter='=', quoter=' "\''):
     return config
 #}}}
 #{{{saveconfig
-def saveconfig(filepath, keymap, config, delimiter='=', read_quoter=' "\'', write_quoter='"'):
+def saveconfig(filepath, keymap, config, delimiter='=', read_quoter=' "\'', write_quoter=''):
     """Save config to file.
     """
     raw_config, sortlist = raw_loadconfig(filepath, return_sort=True, delimiter=delimiter, quoter=read_quoter)
