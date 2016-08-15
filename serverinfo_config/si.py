@@ -45,15 +45,14 @@ def div_percent(a, b):
     if b == 0: return '0%'
     return '%.2f%%' % (round(float(a)/b, 4) * 100)
 
+
 class Server(object):
-    #{{{ hostname
     @classmethod
     def hostname(self):
         with open('/proc/sys/kernel/hostname', 'r') as f:
             hostname = f.readline().strip()
         return hostname
-    #}}}
-    #{{{datetime
+
     @classmethod
     def datetime(self, asstruct=False):
         if not asstruct:
@@ -70,8 +69,7 @@ class Server(object):
                 'tz': time.strftime('%Z', d),
                 'str': time.strftime('%Y-%m-%d %X', d),
             }
-    #}}}
-    #{{{uptime
+
     @classmethod
     def uptime(self):
         with open('/proc/uptime', 'r') as f:
@@ -99,8 +97,6 @@ class Server(object):
             'idle_rate': div_percent(idle_seconds, up_seconds),
         }
     
-    #}}}
-    #{{{loadavg
     @classmethod
     def loadavg(self):
         with open('/proc/loadavg', 'r') as f:
@@ -110,8 +106,7 @@ class Server(object):
             '5min': load_5min,
             '15min': load_15min,
         }
-    #}}}
-    #{{{cpustat
+    
     @classmethod
     def cpustat(self, fullstat=False):
         cpustat = {}
@@ -146,8 +141,6 @@ class Server(object):
                                                     time.localtime(btime))
         return cpustat
 
-    #}}}
-    #{{{meminfo
     @classmethod
     def meminfo(self):
         # OpenVZ may not have some varirables
@@ -189,8 +182,6 @@ class Server(object):
             'swap_free_rate': div_percent(swap_free, swap_total),
         }
 
-    #}}}
-    #{{{mounts
     @classmethod
     def mounts(self, detectdev=False):
         mounts = []
@@ -216,8 +207,6 @@ class Server(object):
                 mount['major'], mount['minor'] = os.major(dev), os.minor(dev)
         return mounts
 
-    #}}}
-    #{{{netifaces
     @classmethod
     def netifaces(self):
         netifaces = []
@@ -315,8 +304,6 @@ class Server(object):
         netifaces = [ iface for iface in netifaces if iface.has_key('mac') ]
         return netifaces
 
-    #}}}
-    #{{{nameservers
     @classmethod
     def nameservers(self):
         nameservers = []
@@ -327,15 +314,11 @@ class Server(object):
                 nameservers.append(ns)
         return nameservers
 
-    #}}}
-    #{{{distribution
     @classmethod
     def distribution(self):
         dist = platform.linux_distribution()
         return ' '.join(dist)
     
-    #}}}
-    #{{{dist
     @classmethod
     def dist(self):
         dist = platform.linux_distribution(full_distribution_name=0)
@@ -344,8 +327,6 @@ class Server(object):
             'version': dist[1],
         }
 
-    #}}}
-    #{{{uname
     @classmethod
     def uname(self):
         p = subprocess.Popen(shlex.split('uname -i'), stdout=subprocess.PIPE, close_fds=True)
@@ -363,8 +344,6 @@ class Server(object):
             'platform': hwplatform,
         }
 
-    #}}}
-    #{{{cpuinfo
     @classmethod
     def cpuinfo(self):
         models = []
@@ -394,8 +373,6 @@ class Server(object):
             'core_count': len(cores),
         }
     
-    #}}}
-    #{{{partinfo
     @classmethod
     def partinfo(self, uuid=None, devname=None):
         """Read partition info including uuid and filesystem.
@@ -436,8 +413,6 @@ class Server(object):
         else:
             return blks
 
-    #}}}
-    #{{{diskinfo
     @classmethod
     def diskinfo(self):
         """Return a dictionary contain info of all disks and partitions.
@@ -613,8 +588,6 @@ class Server(object):
             disks['partitions'][i]['unpartition'] = unpartition
         return disks
     
-    #}}}
-    #{{{virt
     @classmethod
     def virt(self):
         """ Detect the virtual tech of system.
@@ -638,19 +611,21 @@ class Server(object):
         if os.path.exists('/proc/xen/'): return 'Xen'
         if os.path.exists('/proc/vz/'): return 'Virtuozzo/OpenVZ'
         return ''
-    #}}}
+
+
 class Service(object):
 
     support_services = ['cloudview', 'httpd',
                         'mysqld', 'xserver.server', 'reifs.server',
 						'xserver_guard.server',
-                        'sshd', 'iptables', 'crond']
+                        'sshd', 'iptables', 'crond','network','nginx']
 
     pidnames = {
-        'reifs.server': ('__client.reifs', ),
+        'reifs.server': ('/var/log/reifs/__client.reifs.pid', ),
+        'xserver_guard.server': ('/var/run/xserver_guard.pid', ),
+        'nginx':('/opt/X_nginx/nginx/logs/nginx.pid',),
     }
 
-    #{{{status
     @classmethod
     def status(self, service):
         initscript = '/etc/init.d/%s' % service
@@ -666,7 +641,7 @@ class Service(object):
                 # some services have special pid filename
                 if Service.pidnames.has_key(service):
                     for pidname in Service.pidnames[service]:
-                        pidfile = '/var/log/reifs/%s.pid' % pidname
+                        pidfile = pidname
                         if os.path.exists(pidfile):
                             break
                         else:
@@ -706,8 +681,7 @@ class Service(object):
                 return 'stopped'
         
         return 'running'
-    #}}}
-    #{{{autostart_list
+
     @classmethod
     def autostart_list(self):
         """Return a list of the autostart service name.
@@ -722,9 +696,11 @@ class Service(object):
             os.path.basename(os.readlink(filepath))
             for filepath in glob.glob('%s/S*' % rcpath)]
         return services
-    #}}}
+        
+
+
 class Tool(object):
-    #{{{supportfs
+
     @classmethod
     def supportfs(self):
         """Return a list of file system that system support.
@@ -736,7 +712,6 @@ class Tool(object):
                 support_list.append(fstype)
         support_list.append('swap')
         return support_list
-    #}}}
     
 
 if __name__ == '__main__':
