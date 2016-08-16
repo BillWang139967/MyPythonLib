@@ -6,3 +6,7 @@
 
 ## usage
 
+> * cfg_get 获取某配置
+> * cfg_set 修改某配置
+
+具体可以查看下file_utils.py
