@@ -10,7 +10,6 @@ if __name__ == '__main__':
     sys.path.insert(0, root_path)
 
 import re
-import pexpect
 import shlex
 
 import subprocess
