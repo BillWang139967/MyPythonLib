@@ -14,7 +14,7 @@
 
 + [file_utils](file_utils/)
 
-+ [snack_utils](snack_utils/)
++ [snackmenu_utils](snackmenu_utils/)
 
 
 ## 参加步骤
