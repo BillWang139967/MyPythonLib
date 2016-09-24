@@ -1,6 +1,5 @@
-#!/usr/bin/python
-#coding=utf8
 from snack import *
+#coding=utf8
  
 class Mask:
     """
@@ -14,19 +13,20 @@ class Mask:
         """
         self._width = width
         self._screen = screen
-        self.g = GridForm(self._screen, title, 2, 25)
+        self.g = GridForm(self._screen, title, 1, 2)
+        self.subgrid = Grid(2, 20)
         self._row = 0
         self._elements = {}
-        self._buttons = {}
+        self._buttons = 0
         
     def entry(self, label, name, text="", password=0):
         """
         Creates an entry for text.
         """
-        self.g.add( Label( label ), 0, self._row, (0,0,1,1) )
+        self.subgrid.setField( Label( label ), 0, self._row, (0,0,1,1) )
         
         self._elements[name] = Entry(self._width, text, password=password)
-        self.g.add( self._elements[name], 1, self._row, (0,0,0,1) )
+        self.subgrid.setField( self._elements[name], 1, self._row, (0,0,0,1) )
         
         self._row += 1
         
@@ -36,18 +36,14 @@ class Mask:
         """
         self.entry(label, name, text, password=1)
         
-    def buttons(self, **kwargs):
+    def buttons(self, ok=u"确定",cancel = u"取消"):
         """
         Creates a set of buttons given as kwargs.
         IE: mask.buttons(yes="Yes", no="No")
         """
-        col = 0
-        for name in kwargs:
-            self._buttons[name] = Button( kwargs[name] )
-            self.g.add( self._buttons[name], col, self._row, (0,0,1,0) )
-            col = 1-col
-            if col == 0:
-                self._row += 1
+        self._buttons = ButtonBar(self._screen, ((ok, "ok"), (cancel, "cancel")))
+        self.g.add( self.subgrid, 0, 0)
+        self.g.add( self._buttons, 0, 1 )
         
     def radios(self, label, name, options):
         """
@@ -55,10 +51,10 @@ class Mask:
         Options are given as [ (label, value, checked), ... ] where
         checked equ. 0/1.
         """
-        self.g.add( Label( label ), 0, self._row, (0,0,1,1) )
+        self.subgrid.setField( Label( label ), 0, self._row, (0,0,1,1) )
         
         self._elements[name] = RadioBar(self._screen, options)
-        self.g.add( self._elements[name], 1, self._row, (0,0,0,1), anchorLeft=1 )
+        self.subgrid.setField( self._elements[name], 1, self._row, (0,0,0,1), anchorLeft=1 )
         
         self._row += 1
         
@@ -68,7 +64,7 @@ class Mask:
         Options are given as [ (label, value, checked), ... ] where
         checked equ. 0/1.
         """
-        self.g.add( Label( label ), 0, self._row, (0,0,1,1) )
+        self.subgrid.setField( Label( label ), 0, self._row, (0,0,1,1) )
         
         if height is None:
             height = len(options)
@@ -80,7 +76,7 @@ class Mask:
             if selected:
                 self._elements[name].setCurrent(value)
         
-        self.g.add( self._elements[name], 1, self._row, (0,0,0,1), anchorLeft=1 )
+        self.subgrid.setField( self._elements[name], 1, self._row, (0,0,0,1), anchorLeft=1 )
         
         self._row += 1
         
@@ -90,7 +86,7 @@ class Mask:
         Options are given as [ (label, value, checked), ... ] where
         checked equ. 0/1.
         """
-        self.g.add( Label( label ), 0, self._row, (0,0,1,1) )
+        self.subgrid.setField( Label( label ), 0, self._row, (0,0,1,1) )
         
         if height is None:
             height = len(options)
@@ -100,23 +96,25 @@ class Mask:
         for option in options:
             (key, value, selected) = option
             self._elements[name].append( key, value, selected )
-        self.g.add( self._elements[name], 1, self._row, (0,0,0,1), anchorLeft=1, growx=1 )
+        self.subgrid.setField( self._elements[name], 1, self._row, (0,0,0,1), anchorLeft=1, growx=1 )
         
         self._row += 1
         
-    def run(self):
+    def run(self,width = 0,height = 0):
         """
         Runs until a button is pressed.
         Returns [ button, { values } ].
         """
-        btn = self.g.runOnce()
+        if  width and  height: 
+            btn = self.g.runOnce(width,height)
+        else:
+            btn = self.g.runOnce()
+        button = self._buttons.buttonPressed(btn)
         
         cmd = None
         results = {}
         
-        for label in self._buttons:
-            if self._buttons[label] == btn:
-                cmd = label
+        cmd = button
         if btn == 'F12':
             cmd = 'F12'
         
@@ -129,13 +127,3 @@ class Mask:
                 results[name] = self._elements[name].current()
         
         return [ cmd, results ]
-
-
-def warwindows(screen, title, text, help = None):
-#警告窗口
-    btn = Button("确定")
-    war = GridForm(screen, title, 1, 15)
-    war.add(Label(text),0,1)
-    war.add(Label(""),0,2)
-    war.add(btn, 0, 3)
-    war.runOnce()
