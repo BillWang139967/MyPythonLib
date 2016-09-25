@@ -13,9 +13,10 @@ class Mask:
         """
         self._width = width
         self._screen = screen
-        self.g = GridForm(self._screen, title, 1, 2)
+        self.g = GridForm(self._screen, title, 1, 20)
         self.subgrid = Grid(2, 20)
         self._row = 0
+        self._row_grid = 0
         self._elements = {}
         self._buttons = 0
         
@@ -27,7 +28,15 @@ class Mask:
         
         self._elements[name] = Entry(self._width, text, password=password)
         self.subgrid.setField( self._elements[name], 1, self._row, (0,0,0,1) )
-        
+        self._row += 1
+    
+    def text(self, label="",text=""):
+        """
+        Creates  text.
+        """
+        self.subgrid.setField( Label( label ), 0, self._row, (0,0,1,1) )
+        #self.subgrid.setField( TextboxReflowed(self._width,text) , 1, self._row, (0,0,0,1) )
+        self.subgrid.setField( TextboxReflowed(self._width,text, flexDown = 5, flexUp = 10, maxHeight = -1) , 1, self._row, (0,0,0,1) )
         self._row += 1
         
     def password(self, label, name, text=""):
@@ -42,8 +51,10 @@ class Mask:
         IE: mask.buttons(yes="Yes", no="No")
         """
         self._buttons = ButtonBar(self._screen, ((yes, "yes"), (no, "no")))
-        self.g.add( self.subgrid, 0, 0)
-        self.g.add( self._buttons, 0, 1 )
+        self.g.add( self.subgrid, 0, self._row_grid)
+        self.g.add( self._buttons, 0, self._row_grid+1)
+        #self.g.add( self.subgrid, 0, self._row_grid)
+        #self.g.add( self._buttons, 0, self._row_grid+1)
         
     def radios(self, label, name, options):
         """

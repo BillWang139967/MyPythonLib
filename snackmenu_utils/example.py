@@ -4,8 +4,14 @@
 from mylib.snack_lib import *
 
 screen = SnackScreen()
+screen.setColor("ROOT", "white", "blue")
+screen.setColor("ENTRY","white","blue")
+screen.setColor("LABEL","black","white")
+screen.setColor("HELPLINE","white","blue")
+screen.setColor("TEXTBOX","black","yellow")
 def test():
      m = Mask( screen, "test_windows", 35 )
+     m.text("label_test1","ceshi_text")
      m.entry( "label_test1", "entry_test1", "0" )
      m.entry( "label_test2", "entry_test2", "0" )
      m.entry( "label_test3", "entry_test3", "127.0.0.1" )
