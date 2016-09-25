@@ -25,7 +25,7 @@ def test():
          ('radios_name2','radios2', 1), 
          ('radios_name3','radios3', 0) ] )  
      
-     m.buttons( ok="Sava&Quit", cancel="Quit" )
+     m.buttons( yes="Sava&Quit", no="Quit" )
      #(cmd, results) = m.run(12,3)
      (cmd, results) = m.run()
      screen.finish() 

@@ -36,12 +36,12 @@ class Mask:
         """
         self.entry(label, name, text, password=1)
         
-    def buttons(self, ok=u"确定",cancel = u"取消"):
+    def buttons(self, yes=u"确定",no = u"取消"):
         """
         Creates a set of buttons given as kwargs.
         IE: mask.buttons(yes="Yes", no="No")
         """
-        self._buttons = ButtonBar(self._screen, ((ok, "ok"), (cancel, "cancel")))
+        self._buttons = ButtonBar(self._screen, ((yes, "yes"), (no, "no")))
         self.g.add( self.subgrid, 0, 0)
         self.g.add( self._buttons, 0, 1 )
         

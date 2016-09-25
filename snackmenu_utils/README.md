@@ -10,5 +10,6 @@
 
 当点击确定后输出以下结果
 ```
-ok {'entry_test2': '0', 'entry_test3': '127.0.0.1', 'entry_test1': '0', 'radios': 'radios2', 'checks_list': ['checks4']}
+yes {'entry_test2': '0', 'entry_test3': '127.0.0.1', 'entry_test1': '0', 'radios': 'radios2', 'checks_list': ['checks4']}
 ```
+点击cancel时，输出no
