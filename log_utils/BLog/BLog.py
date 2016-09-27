@@ -13,7 +13,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-#{{{class ColoredFormatter
 class ColoredFormatter(logging.Formatter):
     '''A colorful formatter.'''
  
@@ -45,8 +44,7 @@ class ColoredFormatter(logging.Formatter):
         msg = logging.Formatter.format(self, record)
  
         return self.LOG_COLORS.get(level_name, '%s') % msg
-#}}}
-#{{{class Log
+
 class Log(object):
     
     '''
@@ -66,6 +64,10 @@ class Log(object):
             self._logger = logging.getLogger(self._logid)
             
             
+            file_path = os.path.split(self._filename)[0]
+            if not os.path.exists(file_path):
+                os.makedirs(file_path)
+
             if not len(self._logger.handlers):
                 self._logger.setLevel(self.get_map_level(self._level))  
                 
@@ -134,7 +136,8 @@ class Log(object):
             return logging.ERROR
         if level == "critical":
             return logging.CRITICAL
-#}}}
+
+
 if __name__ == "__main__":       
     from BLog import Log
     debug=False
