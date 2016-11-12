@@ -2,19 +2,22 @@
 
 ## 功能
 
-+ 守护进程模板[daemon](daemon)
 
-+ python程序进度条[progressbar](progressbar)
++ 守护进程模板[daemon](My_lib/daemon)
 
-+ 查看linux信息和修改linux配置文件[serverinfo_config](serverinfo_config)
++ python程序进度条[progressbar](My_lib/progressbar)
 
-+ [log](log_utils/)
++ 查看linux信息和修改linux配置文件[serverinfo_config](My_lib/serverinfo_config)
 
-+ [command](command_utils/)
++ [log](My_lib/log_utils/)
 
-+ [file_utils](file_utils/)
++ [command](My_lib/command_utils/)
 
-+ 检测某进程是否存在[monitor_process/](monitor_process)
++ [file_utils](My_lib/file_utils/)
+
++ 检测某进程是否存在[monitor_process](My_lib/monitor_process)
+
++ mysqlORM[mysqlORM](My_lib/mysqlORM/)
 
 
 ## 参加步骤
