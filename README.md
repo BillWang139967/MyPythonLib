@@ -1,7 +1,6 @@
 # MyPythonLib
 
-## 功能
-
+## My_lib
 
 + 守护进程模板[daemon](My_lib/daemon)
 
@@ -18,7 +17,6 @@
 + 检测某进程是否存在[monitor_process](My_lib/monitor_process)
 
 + mysqlORM[mysqlORM](My_lib/mysqlORM/)
-
 
 ## 参加步骤
 
