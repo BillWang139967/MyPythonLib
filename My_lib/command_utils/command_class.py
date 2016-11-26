@@ -17,6 +17,9 @@ class ceshi_class():
     def output(self, str_info):
         '''eg:python command_class.py output "hello world"'''
         return 'hello %s' % str_info
+    def output2(self, str_info="happy"):
+        '''eg:python command_class.py output2 "hello world"'''
+        return 'hello %s' % str_info
 
 if __name__ == '__main__':
     # Handle command-line options
