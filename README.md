@@ -18,6 +18,8 @@
 
 + mysqlORM[mysqlORM](My_lib/mysqlORM/)
 
++ 根据 IP 获取地址位置信息[query_ip](My_lib/query_ip/)
+
 ## 参加步骤
 
 * 在 GitHub 上 `fork` 到自己的仓库，然后 `clone` 到本地，并设置用户信息。
