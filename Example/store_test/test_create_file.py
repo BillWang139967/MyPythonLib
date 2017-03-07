@@ -1,14 +1,27 @@
-# coding:utf-8
+#!/usr/bin/python
+#coding=utf8
+"""
+# Author: meetbill
+# Created Time : 2017-03-07 22:59:17
+
+# File Name: test_create_file.py
+# Description:
+
+"""
 import os
 import random
 import hashlib
 import threading
+import ConfigParser
 
-DIR_PATH_NUM = 10 # Sub-directory numbers
-FILE_NUM = 10 # File numbers in each sub-directory
-PATH_STORE = "/tmp/test/" # Path to write file
-PATH_LOG_RECORD = "/tmp/record/" # Path to record logs
-MAX_FIlE_SIZE_MB = 1  # Max file size
+config = ConfigParser.ConfigParser()
+config.read('./config.ini')
+
+DIR_PATH_NUM= int(config.get('default', 'DIR_PATH_NUM'))
+FILE_NUM = int(config.get('default','FILE_NUM'))
+PATH_STORE = config.get('default','PATH_STORE')
+PATH_LOG_RECORD = config.get('default','PATH_LOG_RECORD')
+MAX_FIlE_SIZE_MB = int(config.get('default','MAX_FIlE_SIZE_MB'))
 
 def log(path, data, suffix="log"):
     fout = open(path + "md5log." + suffix, "a")
@@ -31,22 +44,22 @@ def get_md5(filename):
 
 def write_file(path_store, file_index, dir_index):
     
-    yunsu_path = path_store + dir_index + "/"
-    if not os.path.exists(yunsu_path):
-        os.makedirs(os.path.dirname(yunsu_path))
+    ceshi_path = path_store + "/" + dir_index + "/"
+    if not os.path.exists(ceshi_path):
+        os.makedirs(os.path.dirname(ceshi_path))
 
-    yunsu_full_path = yunsu_path + file_index
+    ceshi_full_path = ceshi_path + file_index
     
     
     data = (str(8).zfill(8)) * random.randint(0, 128 * 1024 * MAX_FIlE_SIZE_MB)
     
-    fout = open(yunsu_full_path, "w")
+    fout = open(ceshi_full_path, "w")
     fout.write(data)
     fout.flush()
-    md5_yunsu = get_md5(yunsu_full_path)
-    os.rename(os.path.join(yunsu_path, file_index), os.path.join(yunsu_path, md5_yunsu))
+    md5_ceshifile = get_md5(ceshi_full_path)
+    os.rename(os.path.join(ceshi_path, file_index), os.path.join(ceshi_path,md5_ceshifile))
     
-    log_data = md5_yunsu
+    log_data = md5_ceshifile
     log(PATH_LOG_RECORD, log_data, dir_index)
     print dir_index, file_index, log_data
     

@@ -1,12 +1,24 @@
-# coding:utf-8
+#!/usr/bin/python
+#coding=utf8
+"""
+# Author: meetbill
+# Created Time : 2017-03-07 22:56:46
+
+# File Name: test_check.py
+# Description:
+
+"""
 
 import os
 import threading
 import hashlib
+import ConfigParser
+config = ConfigParser.ConfigParser()
+config.read('./config.ini')
+PATH_STORE = config.get('default','PATH_STORE')
+LOG_PATH = config.get('default','PATH_LOG_RECORD')
+DIR_PATH_NUM= int(config.get('default', 'DIR_PATH_NUM'))
 
-STOR_PATH = "/tmp/test/"
-LOG_PATH = "/tmp/record/"
-THREAD_NUM = 10
 
 def logfail(data):
 
@@ -47,12 +59,12 @@ def ckeck_file_list(file_path):
         if not str(file_name).startswith("."):
             check_file(file_path, file_name)
 
-def check_files_mutilthread(path_store, file_num):
+def check_files_mutilthread(path_store, dir_num):
     threads = []
     
-    for i in xrange(0, THREAD_NUM):
+    for i in xrange(0, dir_num):
         dir_index = str(i);
-        file_path = STOR_PATH + dir_index + "/"
+        file_path = path_store + "/" + dir_index + "/"
         t = threading.Thread(target=ckeck_file_list, args=(file_path,))
         t.start()
         threads.append(t)
@@ -61,4 +73,4 @@ def check_files_mutilthread(path_store, file_num):
         t.join()
 
 if __name__ == '__main__':
-    check_files_mutilthread(STOR_PATH, THREAD_NUM)
+    check_files_mutilthread(PATH_STORE, DIR_PATH_NUM)
