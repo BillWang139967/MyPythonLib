@@ -1,13 +1,18 @@
-#-*- coding: utf-8 -*-
-#
-"""Package for reading and writing server configurations
+#!/usr/bin/python
+#coding=utf8
+"""
+# Author: meetbill
+# Created Time : 2017-03-13 20:23:44
+
+# File Name: sc.py
+# Description:
+# Package for reading and writing server configurations
 """
 
 import os
 import si
 import shutil
 
-#{{{raw_loadconfig
 def raw_loadconfig(filepath, return_sort=False, delimiter='=', quoter=' "\'', overwrite=True):
     """Read config from file.
     """
@@ -30,8 +35,6 @@ def raw_loadconfig(filepath, return_sort=False, delimiter='=', quoter=' "\'', ov
     else:
         return config
 
-#}}}
-#{{{raw_saveconfig
 def raw_saveconfig(filepath, config, sortlist=[], delimiter='=', quoter=''):
     """Write config to file.
     """
@@ -59,8 +62,6 @@ def raw_saveconfig(filepath, config, sortlist=[], delimiter='=', quoter=''):
     with open(filepath, 'w') as f: f.writelines(lines)
     return True
 
-#}}}
-#{{{loadconfig
 def loadconfig(filepath, keymap, delimiter='=', quoter=' "\''):
     """Load config from file and parse it to dict.
     """
@@ -68,8 +69,7 @@ def loadconfig(filepath, keymap, delimiter='=', quoter=' "\''):
     if raw_config == None: return None
     config = dict((keymap[k],v) for k,v in raw_config.iteritems() if keymap.has_key(k))
     return config
-#}}}
-#{{{saveconfig
+
 def saveconfig(filepath, keymap, config, delimiter='=', read_quoter=' "\'', write_quoter=''):
     """Save config to file.
     """
@@ -79,9 +79,42 @@ def saveconfig(filepath, keymap, config, delimiter='=', read_quoter=' "\'', writ
         if keymap.has_key(k):
             raw_config[keymap[k]] = v
     return raw_saveconfig(filepath, raw_config, sortlist, delimiter=delimiter, quoter=write_quoter)
-#}}}
+
+def readconfig(filepath, readfunc, **params):
+    """Read config from file.
+    """
+    with open(filepath) as f:
+        for line in f:
+            rt = readfunc(line.strip(), **params)
+            if rt != None:
+                return rt
+
+def writeconfig(filepath, readfunc, writefunc, **params):
+    """Write config to file.
+    """
+    lines = []
+    linemeet = False
+    with open(filepath) as f:
+        for line in f:
+            rt = readfunc(line.strip(), **params)
+            if rt != None:
+                linemeet = True
+                line = writefunc(line, **params)
+                if line != None: lines.append(line+'\n')
+            else:
+                lines.append(line)
+
+    # generate a new line if no line meet
+    if not linemeet:
+        line = writefunc(None, **params)
+        if line != None: lines.append(line+'\n')
+        
+    with open(filepath, 'w') as f: f.writelines(lines)
+    return True
+
+
 class Server(object):
-    #{{{network
+
     @classmethod
     def ifconfig(self, ifname, config=None):
         """Read or write single interface's config.
@@ -98,10 +131,12 @@ class Server(object):
                 'IPADDR': 'ip',
                 'NETMASK': 'mask',
                 'GATEWAY': 'gw',
+                'BOOTPROTO':'boot',
             }
             if config == None:
                 return loadconfig(cfile, cmap)
             else:
+                config['boot']='static'
                 cmap_reverse = dict((v,k) for k, v in cmap.iteritems())
                 return saveconfig(cfile, cmap_reverse, config)
         else:
@@ -119,8 +154,7 @@ class Server(object):
             if config:
                 configs[ifname] = config
         return configs
-    #}}}
-    #{{{dns
+
     @classmethod
     def nameservers(self, nameservers=None):
         """Read or write nameservers to config file.
@@ -139,24 +173,154 @@ class Server(object):
             return raw_saveconfig(nspath, 
                                    {'nameserver': nameservers},
                                    delimiter=' ', quoter='')
-    #}}}
+
+    @classmethod
+    def timezone_regions(self):
+        """Return all the timezone regions.
+        """
+        return ('Africa', 'America', 'Antarctica', 'Arctic', 'Asia',
+                'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific', 'Etc')
+
+    @classmethod
+    def timezone_list(self, region=None):
+        """Return timezone list.
+        
+        Pass None to parameter region to get the full timezone name, such as:
+            Asia/Shanghai
+            Asia/Chongqing
+        Or else only the city name would be returned.
+        """
+        zonepath = '/usr/share/zoneinfo'
+        timezones = []
+        if region == None:
+            regions = Server.timezone_regions()
+            for region in regions:
+                regionpath = os.path.join(zonepath, region)
+                for zonefile in os.listdir(regionpath):
+                    if not os.path.isfile(os.path.join(regionpath, zonefile)): continue
+                    timezones.append('%s/%s' % (region, zonefile))
+        else:
+            regionpath = os.path.join(zonepath, region)
+            if not os.path.exists(regionpath): return []
+            for zonefile in os.listdir(regionpath):
+                if not os.path.isfile(os.path.join(regionpath, zonefile)): continue
+                timezones.append(zonefile)
+        return timezones
+
+    @classmethod
+    def timezone(self, timezone=None):
+        """Get or set system timezone.
+        
+        Pass None to parameter config (as default) to get timezone,
+        or pass timezone full name like 'Asia/Shanghai' to set timezone.
+        """
+        tzpath = '/etc/localtime'
+        zonepath = '/usr/share/zoneinfo'
+        
+        if timezone == None:
+            # firstly read from config file
+            timezone = ''
+            if timezone: return timezone
+
+            # or else check the system config file
+            dist = si.Server.dist()
+            if dist['name'] in ('centos', 'redhat'):
+                clockinfo = raw_loadconfig('/etc/sysconfig/clock')
+                if clockinfo and clockinfo.has_key('ZONE'):
+                    timezone = clockinfo['ZONE']
+                    return timezone
+            else:
+                pass
+
+            # or else find the file match /etc/localtime
+            with open(tzpath) as f: tzdata = f.read()
+            regions = Server.timezone_regions()
+            for region in regions:
+                regionpath = os.path.join(zonepath, region)
+                for zonefile in os.listdir(regionpath):
+                    if not os.path.isfile(os.path.join(regionpath, zonefile)): continue
+                    with open(os.path.join(regionpath, zonefile)) as f:
+                        if f.read() == tzdata:  # got it!
+                            return '%s/%s' % (region, zonefile)
+        else:
+            # check and set the timezone
+            timezonefile = os.path.join(zonepath, timezone)
+            if not os.path.exists(timezonefile): return False
+            try:
+                shutil.copyfile(timezonefile, tzpath)
+            except:
+                return False
+
+            # write timezone setting to config file
+            return config.set('time', 'timezone', timezone)
+
+    @classmethod 
+    def _read_fstab(self, line, **params):
+        if not line or line.startswith('#'): return
+        fields = line.split()
+        dev = fields[0]
+        config = {
+            'dev':    fields[0],
+            'mount':  fields[1],
+            'fstype': fields[2],
+        }
+        if dev.startswith('/dev/'):
+            try:
+                devlink = os.readlink(dev)
+                dev = os.path.abspath(os.path.join(os.path.dirname(devlink), dev))
+            except:
+                pass
+            dev = dev.replace('/dev/', '')
+            if dev == params['devname']:
+                return config
+        elif dev.startswith('UUID='):
+            uuid = dev.replace('UUID=', '')
+            partinfo = si.Server.partinfo(devname=params['devname'])
+            if partinfo['uuid'] == uuid:
+                return config
+
+    @classmethod 
+    def _write_fstab(self, line, **params):
+        config = params['config']
+        if not config.has_key('mount') or config['mount'] == None: return None   # remove line
+        if line == None: # new line
+            return '/dev/%s %s                %s    defaults        1 2' %\
+                    (params['devname'], config['mount'], config['fstype'])
+        else: # update existing line
+            fields = line.split()
+            return '%s %s                %s    %s        %s %s' %\
+                    (fields[0], config['mount'], 
+                     config.has_key('fstype') and config['fstype'] or fields[2],
+                     fields[3], fields[4], fields[5])
+    
+    @classmethod
+    def fstab(self, devname, config=None):
+        """Read or write config from /etc/fstab.
+        
+        Example:
+        1. get config
+        >>> config = fstab('sda')
+        2. set config
+        >>> config = {'mount': '/home', 'fstype': 'ext3'}
+        >>> fstab(config)
+        3. remove config
+        >>> config = {'mount': None}
+        >>> fstab(config)
+        """
+        cfgfile = '/etc/fstab'
+        if config == None:
+            # read config
+            return readconfig(cfgfile, Server._read_fstab, devname=devname)
+        else:
+            # write or remove config
+            return writeconfig(cfgfile, Server._read_fstab, Server._write_fstab,
+                               devname=devname, config=config)
+
+
 if __name__ == '__main__':
     print
-    #{{{configure network
-    # read network config
-    config = Server.ifconfig('eth0')
-    print '* Config of eth0:'
-    if config.has_key('mac'): print '  HWADDR: %s' % config['mac']
-    if config.has_key('ip'): print '  IPADDR: %s' % config['ip']
-    if config.has_key('mask'): print '  NETMASK: %s' % config['mask']
-    if config.has_key('gw'): print '  GATEWAY: %s' % config['gw']
-    print
-
-    # write config
-    print '* Write back config of eth0:'
-    print '  Return: %s ' % str(Server.ifconfig('eth0', config))
-    print
     
+    # 输出配置文件中的网卡配置信息
     configs = Server.ifconfigs()
     for ifname, config in configs.iteritems():
         print '* Config of %s:' % ifname
@@ -165,16 +329,69 @@ if __name__ == '__main__':
         if config.has_key('mask'): print '  NETMASK: %s' % config['mask']
         if config.has_key('gw'): print '  GATEWAY: %s' % config['gw']
         print
+
+    # 设置网卡`eth0`
+    config = Server.ifconfig('eth0')
+    print '* Config of eth0:'
+    if config.has_key('mac'): print '  HWADDR: %s' % config['mac']
+    if config.has_key('ip'): print '  IPADDR: %s' % config['ip']
+    if config.has_key('mask'): print '  NETMASK: %s' % config['mask']
+    if config.has_key('gw'): print '  GATEWAY: %s' % config['gw']
+    print
+
+    print '* Write back config of eth0:'
+    print '  Return: %s ' % str(Server.ifconfig('eth0', config))
+    print
     
-    #}}}
-    #{{{configure dns
+    
+    ################################################################################dns
+    # 获取dns
     nameservers = Server.nameservers()
     print '* Nameservers:'
     for nameserver in nameservers:
         print '  %s' % nameserver
     print
-
+    
+    # 设置dns
     print '* Write back nameservers:'
     print '  Return: %s ' % str(Server.nameservers(nameservers))
     print
-    #}}}
+    
+    ###############################################################################时区
+    # 获取时区列表
+    timezones = Server.timezone_list()
+    print '* Timezone fullname list (first 10):'
+    for i, timezone in enumerate(timezones):
+        print '  %s' % timezone
+        if i == 9: break
+    print
+    
+    timezones = Server.timezone_list('Asia')
+    print '* Timezone list in Asia (first 10):'
+    for i, timezone in enumerate(timezones):
+        print '  %s' % timezone
+        if i == 9: break
+    print
+    
+    timezone = Server.timezone()
+    print '* Timezone: %s' % timezone
+    print
+
+    print '* Set timezone: %s' % timezone
+    print '  Return: %s ' % str(Server.timezone())
+    print
+    
+    config = Server.fstab('sda1')
+    print '* Read sda1 fstab info:'
+    print '  dev: %s' % config['dev']
+    print '  mount: %s' % config['mount']
+    print '  fstype: %s' % config['fstype']
+    print
+    
+    print '* Delete sda1 from /etc/fstab'
+    print '  Return: %s ' % str(Server.fstab('sda1', {}))
+    print 
+    
+    print '* Write back to /etc/fstab'
+    print '  Return: %s ' % str(Server.fstab('sda1', config))
+    print 

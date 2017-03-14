@@ -1,6 +1,12 @@
-#-*- coding: utf-8 -*-
+#!/usr/bin/python
+#coding=utf8
+"""
+# Author: meetbill
+# Created Time : 2017-03-13 20:23:44
 
-"""Package for quering server info
+# File Name: si.py
+# Description:
+# Package for quering server info
 """
 
 import os
@@ -615,9 +621,9 @@ class Server(object):
 
 class Service(object):
 
-    support_services = ['cloudview', 'httpd',
+    support_services = ['cloudview',
                         'mysqld', 'xserver.server', 'reifs.server',
-						'xserver_guard.server',
+                        'xserver_guard.server','uctr.server','unode.server',
                         'sshd', 'iptables', 'crond','network','nginx']
 
     pidnames = {
@@ -655,23 +661,41 @@ class Service(object):
             #    return 'running'
 
             # try execute pidof to find the pidfile
-			if service == 'xserver.server':
-				p = subprocess.Popen(shlex.split('pidof -c java'), stdout=subprocess.PIPE, close_fds=True)
-				pid = p.stdout.read().strip()
-				p.wait()
-				if not pid:return 'stopped'
-			elif service == 'xserver_guard.server':
-				p = subprocess.Popen(shlex.split('pidof -c xserver_guard'), stdout=subprocess.PIPE, close_fds=True)
-				pid = p.stdout.read().strip()
-				p.wait()
-				if not pid:return 'stopped'
-			else:
-				return 'stopped'
+            if service == 'xserver.server':
+                p = subprocess.Popen(shlex.split('pidof -c java'), stdout=subprocess.PIPE, close_fds=True)
+                pid = p.stdout.read().strip()
+                p.wait()
+                if not pid:return 'stopped'
+            elif service == 'xserver_guard.server':
+                p = subprocess.Popen(shlex.split('pidof -c xserver_guard'), stdout=subprocess.PIPE, close_fds=True)
+                pid = p.stdout.read().strip()
+                p.wait()
+                if not pid:return 'stopped'
+            elif service == "uctr.server":
+                cmd = 'ps -ef |grep %s|grep -v "grep"' % "uctr"
+                p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+                if p.wait() == 0:
+                    val = p.stdout.read()
+                    if "uctr" in val:
+                          return "running"
+                else:
+                    return "stopped"
+            elif service == "unode.server":
+                cmd = 'ps -ef |grep %s|grep -v "grep"' % "unode"
+                p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+                if p.wait() == 0:
+                    val = p.stdout.read()
+                    if "unode" in val:
+                          return "running"
+                else:
+                    return "stopped"
+            else:
+                return 'stopped'
 
-          # 	p = subprocess.Popen(shlex.split('pidof -c -o %%PPID -x %s' % service), stdout=subprocess.PIPE, close_fds=True)
-          # 	pid = p.stdout.read().strip()
-          # 	p.wait()
-          # 	if not pid:return 'stopped'
+          #     p = subprocess.Popen(shlex.split('pidof -c -o %%PPID -x %s' % service), stdout=subprocess.PIPE, close_fds=True)
+          #     pid = p.stdout.read().strip()
+          #     p.wait()
+          #     if not pid:return 'stopped'
 
         if pidfile:
             with file(pidfile) as f: pid = f.readline().strip()
