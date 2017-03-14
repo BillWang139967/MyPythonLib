@@ -231,7 +231,6 @@ class Server(object):
                     return timezone
             else:
                 pass
-
             # or else find the file match /etc/localtime
             with open(tzpath) as f: tzdata = f.read()
             regions = Server.timezone_regions()
@@ -245,14 +244,14 @@ class Server(object):
         else:
             # check and set the timezone
             timezonefile = os.path.join(zonepath, timezone)
-            if not os.path.exists(timezonefile): return False
+            if not os.path.exists(timezonefile): 
+                return False
             try:
                 shutil.copyfile(timezonefile, tzpath)
             except:
                 return False
-
             # write timezone setting to config file
-            return config.set('time', 'timezone', timezone)
+            return True
 
     @classmethod 
     def _read_fstab(self, line, **params):
@@ -378,7 +377,7 @@ if __name__ == '__main__':
     print
 
     print '* Set timezone: %s' % timezone
-    print '  Return: %s ' % str(Server.timezone())
+    print '  Return: %s ' % str(Server.timezone(timezone))
     print
     
     config = Server.fstab('sda1')
