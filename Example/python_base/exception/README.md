@@ -1,14 +1,3 @@
----
-layout: post
-title:
-subtitle:
-date: 2016-11-21 20:10:35
-category:
-author: meetbill
-tags:
-   -
----
-
 * [exception](#exception)
 	* [str(e)](#stre)
 	* [repr(e)](#repre)
