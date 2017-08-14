@@ -1,28 +1,48 @@
 # MyPythonLib
+<!-- vim-markdown-toc GFM -->
+* [My_lib](#my_lib)
+    * [终端界面/菜单相关](#终端界面/菜单相关)
+    * [进程相关](#进程相关)
+    * [配置文件及日志相关](#配置文件及日志相关)
+    * [其他](#其他)
+* [Example](#example)
+* [相关项目](#相关项目)
+* [参加步骤](#参加步骤)
+
+<!-- vim-markdown-toc -->
 
 ## My_lib
 
-+ 守护进程模板[daemon](My_lib/daemon)
+### 终端界面/菜单相关 
 
-+ python程序进度条[progressbar](My_lib/progressbar)
+* [progressbar](My_lib/progressbar)--------------------python 程序进度条
+* [ttable](My_lib/ttable)------------------------------Linux 终端表格
+* [command](My_lib/command_utils/)---------------------命令行执行加函数参数时，可以直接对函数操作
 
-+ 查看linux信息和修改linux配置文件[serverinfo_config](My_lib/serverinfo_config)
+### 进程相关
 
-+ [log](My_lib/log_utils/)
+* [daemon](My_lib/daemon)------------------------------守护进程模板
+* [monitor_process](My_lib/monitor_process)------------检测某进程是否存在
 
-+ [command](My_lib/command_utils/)
+### 配置文件及日志相关
 
-+ [file_utils](My_lib/file_utils/)
+* [serverinfo_config](My_lib/serverinfo_config)--------查看linux信息和修改linux配置文件
+* [log](My_lib/log_utils/)-----------------------------根据日志大小轮转日志
+* [file_utils](My_lib/file_utils/)---------------------对配置文件进行获取配置以及修改配置
 
-+ 检测某进程是否存在[monitor_process](My_lib/monitor_process)
+### 其他
 
-+ mysqlORM[mysqlORM](My_lib/mysqlORM/)
-
-+ 根据 IP 获取地址位置信息[query_ip](My_lib/query_ip/)
+* mysqlORM[mysqlORM](My_lib/mysqlORM/)
+* 根据 IP 获取地址位置信息[query_ip](My_lib/query_ip/)
 
 ## Example
 
 [相关wiki](https://github.com/BillWang139967/MyPythonLib/wiki)
+
+## 相关项目
+
+* [运维实践指南相关程序](https://github.com/BillWang139967/op_practice_code)
+* [Linux 运维工具](https://github.com/BillWang139967/linux_tools)
 
 ## 参加步骤
 
