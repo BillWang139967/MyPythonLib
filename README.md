@@ -5,6 +5,7 @@
     * [进程相关](#进程相关)
     * [配置文件及日志相关](#配置文件及日志相关)
     * [其他](#其他)
+    * [XML 处理](#xml-处理)
 * [Example](#example)
 * [相关项目](#相关项目)
 * [参加步骤](#参加步骤)
@@ -32,8 +33,12 @@
 
 ### 其他
 
-* mysqlORM[mysqlORM](My_lib/mysqlORM/)
-* 根据 IP 获取地址位置信息[query_ip](My_lib/query_ip/)
+* [mysqlORM](My_lib/mysqlORM/)-------------------------mysqlORM
+* [query_ip](My_lib/query_ip/)-------------------------根据 IP 获取地址位置信息
+
+### XML 处理
+
+* [xmltodict](./My_lib/xmltodict/)---------------------将 xml 转为字典或者字典转为 xml
 
 ## Example
 
