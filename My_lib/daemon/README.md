@@ -1,14 +1,23 @@
-# 需要修改
+## 使用
+
+需要修改部分
+
+* pid 文件位置
+* 运行程序
+
 ```
-run_daemon.py
-    1.pid
-    2.the function of run
+pid_file = "/var/run/test.pid"
+class MyDaemon(Daemon):
+    def run(self):
+        ##########################################需要修改部分
+        ceshi.ceshi()
+        ##########################################
 ```
-# init.d
-```
-    1.the dir of run_daemon.py
-    2.the name of process
-```
+## 启动后如何查看进程
+
+* pid 文件是否存在
+* ps -ef | grep python 
+
 ## 原理
 ```
 linux创建守护进程的步骤如下：

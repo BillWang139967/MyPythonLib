@@ -1,20 +1,16 @@
 #!/usr/bin/env python
-import Queue
-import threading
-import sys, time
-import urllib2
-import json
-import agent
-from daemon import Daemon
+import sys
+from mylib.daemon import Daemon
 
+import ceshi
 pid_file = "/var/run/test.pid"
 class MyDaemon(Daemon):
     def run(self):
-        agent.startTh()
+        ##########################################需要修改部分
+        ceshi.ceshi()
+        ##########################################
  
 if __name__ == "__main__":
-    ######################################
-    # edit this code
     daemon = MyDaemon(pid_file)
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
