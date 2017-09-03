@@ -3,9 +3,12 @@
 """
 # Author: meetbill
 # Created Time : 2017-08-14 11:17:33
+# last change  : 2017-09-03 13:44:25
 
 # File Name:Ttable.py
 # Description:
+
+version: 1.0.1
 
 """
 import sys
@@ -388,4 +391,29 @@ if __name__ == "__main__":
     x.append("('left','l',2)",('left','l',2))
     x.append("('right','r',2)",('right','r',2))
     x.append("('center','c',2)",('center','c',2))
+    print x
+    
+    # loop
+    x = ttable("host info",2)
+    x.defattr("l","l")
+    x.header("host_group","host")
+    elements={
+        "host_group1":["127.0.0.1","127.0.0.2","127.0.0.3"],
+        "host_group2":["127.0.0.1","127.0.0.2"]
+    }
+    lastpos = len(elements) - 1
+    for i, host_group in enumerate(elements):
+        ip_list = elements[host_group]
+        for j,ip in enumerate(ip_list):
+            # 填充数据
+            if j == 0:
+                x.append(host_group,ip)
+            else:
+                x.append("",ip)
+            # 分割线
+            if j < (len(ip_list)-1):
+                x.append("", "---")
+        # 分割线
+        if i < lastpos:
+            x.append("---", "---")
     print x
