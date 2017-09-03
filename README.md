@@ -1,7 +1,7 @@
 # MyPythonLib
 <!-- vim-markdown-toc GFM -->
 * [My_lib](#my_lib)
-    * [终端界面/菜单相关](#终端界面/菜单相关)
+    * [终端界面/菜单相关](#终端界面菜单相关)
     * [进程相关](#进程相关)
     * [配置文件及日志相关](#配置文件及日志相关)
     * [其他](#其他)
@@ -42,7 +42,8 @@
 
 ## Example
 
-[相关wiki](https://github.com/BillWang139967/MyPythonLib/wiki)
+* [相关wiki](https://github.com/BillWang139967/MyPythonLib/wiki)
+* [python 基础学习](./Example/python_base/README.md)
 
 ## 相关项目
 
