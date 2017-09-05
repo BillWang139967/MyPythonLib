@@ -1,32 +1,25 @@
-#-*- coding: utf-8 -*-
+#!/usr/bin/python
+#coding=utf8
+"""
+# Author: meetbill
+# Created Time : 2016-09-05 19:57:09
 
-"""Package for  operations.
+# File Name: file_util.py
+# Description:
+# Package for  operations.
 """
 
-import os
-if __name__ == '__main__':
-    import sys
-    root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    sys.path.insert(0, root_path)
-
-import re
-import shlex
-
-import subprocess
 import sys
-import linecache
+import re
+
 reload(sys)  
 sys.setdefaultencoding('utf8')
 
 # 需要修改，配置文件位置
-CONFIG_CFG = '/etc/config'
 
-#{{{loadconfig
-def loadconfig(cfgfile=None, detail=False):
+def _loadconfig(cfgfile=None, detail=False):
     """Read config file and parse config item to dict.
     """
-    if not cfgfile: cfgfile = CONFIG_CFG
-
     settings = {}
     with open(cfgfile) as f:
         for line_i, line in enumerate(f):
@@ -45,7 +38,6 @@ def loadconfig(cfgfile=None, detail=False):
                 if not detail: continue
             else:
                 commented = False
-
             # 将行以第一个'='分割
             #########################################
             fs = re.split('=', line, 1)
@@ -74,26 +66,34 @@ def loadconfig(cfgfile=None, detail=False):
             if detail: settings[item]['count'] = count
             
     return settings
-
-#}}}
-#{{{cfg_get
-def cfg_get(item, detail=False, config=None):
-    """Get value of a config item.
+def cfg_get(config_file,item,detail=False):
     """
-    if not config: config = loadconfig(detail=detail)
+    功能:获取配置文件中某个 item 的值
+
+    config_file:配置文件位置
+    item:获取项
+    detail:详细显示，显示 item 在多少行以及是否为注释状态等等
+    
+    例子:python file_util.py cfg_get ./config s3_addr
+    """
+    config = _loadconfig(config_file,detail=detail)
     if config.has_key(item):
+        print config[item]
         return config[item]
     else:
         return None
-#}}}
-#{{{cfg_set
-def cfg_set(item, value, commented=False, config=None):
-    """Set value of a config item.
-       如果可以获取到key，则对key后的item进行修改
-       如果获取不到key，则直接在配置文件后进行追加一行
+def cfg_set(config_file,item, value, commented=False):
     """
-    cfgfile = CONFIG_CFG
-    v = cfg_get(item, detail=True, config=config)
+    功能:对某配置进行修改，如果可以获取到 key，则对 key 后的 item 进行修改如果获取不到 key，则直接在配置文件后进行追加一行
+
+    config_file:配置文件位置
+    item:获取项
+    value:某项要更改的值
+    commented:配置的时候是否配置为注释状态
+    
+    例子:python file_util.py cfg_set ./config s3_addr 192.168.1.3
+    """
+    v = cfg_get(config_file,item, detail=True)
     #print v
 
     if v:
@@ -138,20 +138,41 @@ def cfg_set(item, value, commented=False, config=None):
         with open(v['file'], 'w') as f: f.write(''.join(lines))
     else:
         # append to the end of file
-        with open(inifile, 'a') as f:
+        with open(config_file, 'a') as f:
+            #########################################
             f.write('\n%s%s = %s\n' % (commented and '#' or '', item, value))
-    
+    print "new"
+    cfg_get(config_file,item, detail=True)
     return True
-#}}}
+
+
+
 if __name__ == '__main__':
-    import pprint
-    pp = pprint.PrettyPrinter(indent=4)
-    
-    pp.pprint(loadconfig())
-    #print cfg_get('xxxxxx')
-    #print cfg_get('Subsystem', detail=True)
-    #print cfg_set('xxxxxx', '44444333', commented=False)
-    #print cfg_set('Subsystem', 'sftp\t/usr/libexec/openssh/sftp-server', commented=True)
-    
-    #print chlicense('aaaaaa')
-    
+    import sys, inspect                                                                                                                                                                        
+    if len(sys.argv) < 2:
+        print "Usage:"
+        for k, v in sorted(globals().items(), key=lambda item: item[0]):
+            if inspect.isfunction(v) and k[0] != "_":
+                args, __, __, defaults = inspect.getargspec(v)
+                if defaults:
+                    print sys.argv[0], k, str(args[:-len(defaults)])[1:-1].replace(",", ""), \
+                          str(["%s=%s" % (a, b) for a, b in zip(args[-len(defaults):], defaults)])[1:-1].replace(",", "") 
+                else:
+                    print sys.argv[0], k, str(v.func_code.co_varnames[:v.func_code.co_argcount])[1:-1].replace(",", "") 
+        sys.exit(-1)
+    else:
+        func = eval(sys.argv[1])
+        args = sys.argv[2:]
+        try:
+            r = func(*args)
+        except Exception, e:
+            print "Usage:"
+            print "\t", "python %s %s" % (sys.argv[0],sys.argv[1]),str(func.func_code.co_varnames[:func.func_code.co_argcount])[1:-1].replace(",", "") 
+            if func.func_doc:
+                print "\n".join(["\t\t" + line.strip() for line in func.func_doc.strip().split("\n")])
+            print e
+            r = -1
+            import traceback
+            traceback.print_exc()
+        if isinstance(r, int):
+            sys.exit(r)
