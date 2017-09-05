@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#coding=utf8
 "Makes working with XML feel like you are working with JSON"
 
 try:
@@ -463,7 +464,7 @@ if __name__ == '__main__':  # pragma: no cover
   <mydocument has="an attribute">
     <and>
       <many>elements</many>
-      <many>more elements</many>
+      <many>测试 more elements</many>
     </and>
     <plus a="complex">
       element as well

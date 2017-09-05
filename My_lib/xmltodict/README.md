@@ -1,11 +1,15 @@
 ## xmltodict
 <!-- vim-markdown-toc GFM -->
-* [xml 转 dict](#xml-转-dict)
-    * [方法](#方法)
-    * [字典和 json 的区别](#字典和-json-的区别)
-* [dict 转 xml](#dict-转-xml)
+* [使用](#使用)
+    * [xml 转 dict](#xml-转-dict)
+        * [方法](#方法)
+        * [字典和 json 的区别](#字典和-json-的区别)
+    * [dict 转 xml](#dict-转-xml)
+* [FAQ](#faq)
+    * [xml 转 dict 时报错](#xml-转-dict-时报错)
 
 <!-- vim-markdown-toc -->
+# 使用
 
 ## xml 转 dict
 
@@ -29,3 +33,16 @@ new_xml = old_xml.split('?>')[1]
 ## dict 转 xml
 
 unparse
+
+# FAQ
+
+## xml 转 dict 时报错
+
+报错如下
+
+```
+xml.parsers.expat.ExpatError: not well-formed (invalid token): line 11, column 47
+```
+上面提示是在 xml 的第 11 行的第 47 个字符那有问题，查看的时候查看下上行是否有错误
+
+检查下是否双引号使用了中文，xml 格式错误等等
