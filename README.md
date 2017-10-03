@@ -44,6 +44,7 @@
 
 * [相关wiki](https://github.com/BillWang139967/MyPythonLib/wiki)
 * [python 基础学习](./Example/python_base/README.md)
+* [python 交互模式自动补全](./Example/python_interactive/README.md)
 
 ## 相关项目
 
