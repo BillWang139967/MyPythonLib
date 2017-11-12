@@ -49,7 +49,7 @@ def b2h(n):
 
 def div_percent(a, b):
     if b == 0: return '0%'
-    return '%.2f%%' % (round(float(a)/b, 4) * 100)
+    return '%.2f' % (round(float(a)/b, 4) * 100)
 
 
 class Server(object):
@@ -182,6 +182,7 @@ class Server(object):
             'swap_total': b2h(swap_total),
             'swap_used': b2h(swap_used),
             'swap_free': b2h(swap_free),
+            'mem_used_rate_reality': div_percent(mem_used - mem_buffers - mem_cached, mem_total),
             'mem_used_rate': div_percent(mem_used, mem_total),
             'mem_free_rate': div_percent(mem_free, mem_total),
             'swap_used_rate': div_percent(swap_used, swap_total),
@@ -771,13 +772,14 @@ if __name__ == '__main__':
     
     meminfo = Server.meminfo()
     print '* Memory total: %s' % meminfo['mem_total']
-    print '* Memory used: %s (%s)' % (meminfo['mem_used'], meminfo['mem_used_rate'])
-    print '* Memory free: %s (%s)' % (meminfo['mem_free'], meminfo['mem_free_rate'])
+    print '* Memory used: %s (%s%%)' % (meminfo['mem_used'], meminfo['mem_used_rate'])
+    print '* Memory used rate reality: %s%%' % meminfo['mem_used_rate_reality']
+    print '* Memory free: %s (%s%%)' % (meminfo['mem_free'], meminfo['mem_free_rate'])
     print '* Memory buffers: %s' % meminfo['mem_buffers']
     print '* Memory cached: %s' % meminfo['mem_cached']
     print '* Swap total: %s' % meminfo['swap_total']
-    print '* Swap used: %s (%s)' % (meminfo['swap_used'], meminfo['swap_used_rate'])
-    print '* Swap free: %s (%s)' % (meminfo['swap_free'], meminfo['swap_free_rate'])
+    print '* Swap used: %s (%s%%)' % (meminfo['swap_used'], meminfo['swap_used_rate'])
+    print '* Swap free: %s (%s%%)' % (meminfo['swap_free'], meminfo['swap_free_rate'])
     print
     
     mounts = Server.mounts(True)
@@ -787,7 +789,7 @@ if __name__ == '__main__':
         print '* Mount point: %s' % mount['path']
         print '* Total space: %s' % mount['total']
         print '* Free space: %s' % mount['free']
-        print '* Used space: %s (%s)' % (mount['used'], mount['used_rate'])
+        print '* Used space: %s (%s%%)' % (mount['used'], mount['used_rate'])
         print 
     
     netifaces = Server.netifaces()

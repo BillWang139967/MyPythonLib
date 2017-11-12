@@ -8,6 +8,7 @@ si.py 可获取linux系统信息，可以获得如下信息
 + network(网卡和dns信息)
 + disk
 + memory
++ 磁盘挂载点
 
 ## sc.py
 
