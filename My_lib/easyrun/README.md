@@ -9,7 +9,8 @@
     * [2.2 run_capture](#22-run_capture)
     * [2.3 run_capture_limited](#23-run_capture_limited)
     * [2.4 run_timeout](#24-run_timeout)
-* [3 更新说明](#3-更新说明)
+* [3 其他](#3-其他)
+* [4 更新说明](#4-更新说明)
 
 <!-- vim-markdown-toc -->
 
@@ -85,7 +86,15 @@ print(run_capture_limited('ls', maxlines=2).output)
     'timeout'
 ```
 
-## 3 更新说明
+## 3 其他
+
+使用此程序获取多行内容时处理方法，通过 split 方法将输出内容变为数组
+
+```
+r.output.split('\n')
+```
+
+## 4 更新说明
 
 
 本程序在[原程序 easyrun](https://github.com/rfyiamcool/easyrun)的基础上，修正了部分问题
