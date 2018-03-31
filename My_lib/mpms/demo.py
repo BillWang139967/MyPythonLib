@@ -34,10 +34,9 @@ Processes:3 Threads_per_process:3 Total_threads:9 TotalTime: 44.83632779121399
 Processes:1 Threads_per_process:1 Total_threads:1 TotalTime: 401.3383722305298
 """
 from __future__ import unicode_literals, print_function
-from pprint import pprint
 from time import time, sleep
 
-from mpms import MPMS, Meta
+from mylib.mpms import MPMS, Meta
 
 
 def worker(index, t=None):
@@ -92,11 +91,9 @@ def main():
     # 下面这些值用于多次运行,看时间
     test_params = (
         # (processes, threads_per_process)
-        (20, 50),
         (10, 20),
         (5, 10),
-        (3, 3),
-        (1, 1)
+        (1, 3)
     )
     for processes, threads_per_process in test_params:
         # Init the poll  # 初始化
@@ -112,7 +109,7 @@ def main():
 
         # put task parameters into the task queue, 2000 total tasks
         # 把任务加入任务队列,一共2000次
-        for i in range(2000):
+        for i in range(200):
             m.put(i, t=time())
 
         # optional, close the task queue. queue will be auto closed when join()

@@ -1,4 +1,13 @@
 # mpms
+<!-- vim-markdown-toc GFM -->
+* [简介](#简介)
+* [install](#install)
+* [run](#run)
+* [version](#version)
+
+<!-- vim-markdown-toc -->
+
+### 简介
 Simple python Multiprocesses-Multithreads queue  
 简易Python多进程-多线程任务队列  
 (自用, ap不为生产环境下造成的任何损失和灵异现象负责)
@@ -41,8 +50,12 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-
 更多请看 `demo.py`
 
+### version
 
-[原程序 mpms](https://github.com/aploium/mpms)
+> * V2.0.0.1 
+>   * (1) 增加输出日志到 /tmp/mpms.log
+>   * (2) 当进程数为 1 时，使用的队列自动修改为 Queue(当使用的python 版本没有开启 sem_open 时使用,即无法使用多进程库 multiprocessing)
+> * V2.0.0.0 
+>   * [原程序 mpms](https://github.com/aploium/mpms)
