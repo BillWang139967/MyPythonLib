@@ -10,13 +10,17 @@ echo "import readline, rlcompleter" > ~/.pythonstartup.py
 echo 'readline.parse_and_bind("tab: complete")' >> ~/.pythonstartup.py
 
 
-
-CK_BASH=`grep "PYTHONSTARTUP" ~/.bashrc | wc -l`
-if [ "w${CK_BASH}" = "w0" ]
+if [[ -e ~/.bashrc ]]
 then
-	echo " " >> ~/.bashrc
-	echo "export PYTHONSTARTUP=~/.pythonstartup.py" >> ~/.bashrc
-fi 
+    CK_BASH=`grep "PYTHONSTARTUP" ~/.bashrc | wc -l`
+    if [[ "w${CK_BASH}" = "w0" ]]
+    then
+        echo " " >> ~/.bashrc
+        echo "export PYTHONSTARTUP=~/.pythonstartup.py" >> ~/.bashrc
+    fi 
+else
+    echo "export PYTHONSTARTUP=~/.pythonstartup.py" >> ~/.bashrc
+fi
 . ~/.bashrc
 
 echo ":)"
