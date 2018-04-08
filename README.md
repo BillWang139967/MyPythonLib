@@ -48,20 +48,20 @@
 
 ## 2 Example
 
-* [相关wiki](https://github.com/BillWang139967/MyPythonLib/wiki)
+* [相关wiki](https://github.com/meetbill/MyPythonLib/wiki)
 * [python 基础学习](./Example/python_base/README.md)
 * [python 交互模式自动补全](./Example/python_interactive/README.md)
 
 ## 3 相关项目
 
-* [运维实践指南相关程序](https://github.com/BillWang139967/op_practice_code)
-* [Linux 运维工具](https://github.com/BillWang139967/linux_tools)
+* [运维实践指南相关程序](https://github.com/meetbill/op_practice_code)
+* [Linux 运维工具](https://github.com/meetbill/linux_tools)
 
 ## 4 参加步骤
 
 * 在 GitHub 上 `fork` 到自己的仓库，然后 `clone` 到本地，并设置用户信息。
 ```
-$ git clone https://github.com/BillWang139967/MyPythonLib.git
+$ git clone https://github.com/meetbill/MyPythonLib.git
 $ cd MyPythonLib
 $ git config user.name "yourname"
 $ git config user.email "your email"
@@ -75,7 +75,7 @@ $ git push
 * 在 GitHub 网站上提交 pull request。
 * 定期使用项目仓库内容更新自己仓库内容。
 ```
-$ git remote add upstream https://github.com/BillWang139967/MyPythonLib.git
+$ git remote add upstream https://github.com/meetbill/MyPythonLib.git
 $ git fetch upstream
 $ git checkout master
 $ git rebase upstream/master

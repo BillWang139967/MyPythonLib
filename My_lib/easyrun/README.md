@@ -9,7 +9,9 @@
     * [2.2 run_capture](#22-run_capture)
     * [2.3 run_capture_limited](#23-run_capture_limited)
     * [2.4 run_timeout](#24-run_timeout)
-* [3 其他](#3-其他)
+* [3 返回结果进行处理](#3-返回结果进行处理)
+    * [3.1 返回结果处理为数组](#31-返回结果处理为数组)
+    * [3.2 返回数据去掉换行符](#32-返回数据去掉换行符)
 * [4 更新说明](#4-更新说明)
 
 <!-- vim-markdown-toc -->
@@ -86,12 +88,23 @@ print(run_capture_limited('ls', maxlines=2).output)
     'timeout'
 ```
 
-## 3 其他
+## 3 返回结果进行处理
 
+r.output 为字符串，日常使用时需要处理为对应类型的数据
+
+### 3.1 返回结果处理为数组
 使用此程序获取多行内容时处理方法，通过 split 方法将输出内容变为数组
 
 ```
-r.output.split('\n')
+r_list = r.output.split('\n')
+while "" in r_list:
+    r_list.remove("")
+```
+### 3.2 返回数据去掉换行符
+
+比如 run_capture 获取的数据为一行字符串或者某个数字，则需要将其进行转换
+```
+r.output.replace("\n","")
 ```
 
 ## 4 更新说明
