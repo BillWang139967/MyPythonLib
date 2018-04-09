@@ -3,6 +3,7 @@
 * [简介](#简介)
 * [install](#install)
 * [run](#run)
+* [说明](#说明)
 * [version](#version)
 
 <!-- vim-markdown-toc -->
@@ -51,6 +52,13 @@ if __name__ == '__main__':
     main()
 ```
 更多请看 `demo.py`
+### 说明
+
+collector 中的 meta 参数
+
+> * meta.taskid  # 此任务的 taskid
+> * meta.args    # 此任务的 args
+> * meta.kwargs  # 此任务的 kwargs
 
 ### version
 
