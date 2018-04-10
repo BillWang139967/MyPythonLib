@@ -26,6 +26,7 @@
 * [daemon](My_lib/daemon)------------------------------守护进程模板
 * [monitor_process](My_lib/monitor_process)------------检测某进程是否存在
 * [mpms](My_lib/mpms/)---------------------------------Python 多进程-多线程任务队列
+* [w_mpms](My_lib/w_mpms/)-----------------------------Python 多进程-多线程任务队列【简化版】
 
 ### 1.3 python 调用 shell
 
