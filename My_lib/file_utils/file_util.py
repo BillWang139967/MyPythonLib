@@ -21,7 +21,7 @@ def _loadconfig(cfgfile=None, detail=False):
     """Read config file and parse config item to dict.
     """
     settings = {}
-    with open(cfgfile,"w+") as f:
+    with open(cfgfile) as f:
         for line_i, line in enumerate(f):
             # line_i[行号]，line[每行内容]
             
