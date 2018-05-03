@@ -3,6 +3,7 @@
 一个subprocess模块的封装,可以更方便的进行系统调用
 
 <!-- vim-markdown-toc GFM -->
+
 * [1 安装](#1-安装)
 * [2 使用方法](#2-使用方法)
     * [2.1 run](#21-run)
@@ -112,5 +113,6 @@ r.output.replace("\n","")
 
 本程序在[原程序 easyrun](https://github.com/rfyiamcool/easyrun)的基础上，修正了部分问题
 
+> * v1.0.3 去掉 run_stream 和 run_async 函数
 > * v1.0.2 修正 run_timeout 无法生效问题
 
