@@ -7,7 +7,7 @@
 # File Name: easyrun.py
 # Description:
 
-# v1.0.3
+# v1.0.4
 
 """
 import subprocess
@@ -23,9 +23,6 @@ class Result(object):
         self.success = False
         if retcode == 0:
             self.success = True
-
-class TimeoutError(Exception):
-    pass
 
 def run(command):
     process = subprocess.Popen(command, shell=True)
@@ -54,6 +51,7 @@ def run_capture(command):
     process = subprocess.Popen(command, shell=True, stdout=outpipe,
                                                     stderr=errpipe)
     output, _ = process.communicate()
+    output = output.strip('\n')
     return Result(command=command, retcode=process.returncode, output=output)
 
 def run_capture_limited(command, maxlines=20000):
