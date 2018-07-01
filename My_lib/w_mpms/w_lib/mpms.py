@@ -17,7 +17,7 @@ try:
 except:
     pass
 
-VERSION = (2, 0, 0, 2)
+VERSION = (2, 0, 0, 3)
 VERSION_STR = "{}.{}.{}.{}".format(*VERSION)
 
 
@@ -230,6 +230,7 @@ class MPMS(object):
             self.running_tasks.pop(taskid)
             self.taskid = taskid
             self.finish_count += 1
+            _logger.debug("[C] mpms collector finish [%d/%d]" %(self.finish_count,self.total_count))
             try:
                 self.result.append(result)
             except:
