@@ -1,9 +1,10 @@
 # MyPythonLib
 <!-- vim-markdown-toc GFM -->
+
 * [1 My_lib](#1-my_lib)
-    * [1.1 终端界面/菜单相关](#11-终端界面菜单相关)
+    * [1.1 终端界面 / 菜单相关](#11-终端界面--菜单相关)
     * [1.2 进程相关](#12-进程相关)
-    * [1.3 python 调用 shell](#13-python-调用-shell)
+    * [1.3 Python 调用 shell](#13-python-调用-shell)
     * [1.4 配置文件及日志相关](#14-配置文件及日志相关)
     * [1.5 其他](#15-其他)
     * [1.6 XML 处理](#16-xml-处理)
@@ -15,43 +16,44 @@
 
 ## 1 My_lib
 
-### 1.1 终端界面/菜单相关 
+### 1.1 终端界面 / 菜单相关
 
-* [progressbar](My_lib/progressbar)--------------------python 程序进度条
+* [progressbar](My_lib/progressbar)--------------------Python 程序进度条
 * [ttable](My_lib/ttable)------------------------------Linux 终端表格
-* [command](My_lib/command_utils/)---------------------命令行执行加函数参数时，可以直接对函数操作
+* [command](My_lib/command_utils/)--------------------- 命令行执行加函数参数时，可以直接对函数操作
+* [color](My_lib/color/)------------------------------- 终端 print 颜色
 
 ### 1.2 进程相关
 
-* [daemon](My_lib/daemon)------------------------------守护进程模板
-* [monitor_process](My_lib/monitor_process)------------检测某进程是否存在
-* [mpms](My_lib/mpms/)---------------------------------Python 多进程-多线程任务队列
-* [w_mpms](My_lib/w_mpms/)-----------------------------Python 多进程-多线程任务队列【简化版】
+* [daemon](My_lib/daemon)------------------------------ 守护进程模板
+* [monitor_process](My_lib/monitor_process)------------ 检测某进程是否存在
+* [mpms](My_lib/mpms/)---------------------------------Python 多进程 - 多线程任务队列
+* [w_mpms](My_lib/w_mpms/)-----------------------------Python 多进程 - 多线程任务队列【简化版】
 
-### 1.3 python 调用 shell
+### 1.3 Python 调用 shell
 
-* [easyrun](My_lib/easyrun/README.md)------------------python 调用 shell 库
+* [easyrun](My_lib/easyrun/README.md)------------------Python 调用 shell 库
 
 ### 1.4 配置文件及日志相关
 
-* [serverinfo_config](My_lib/serverinfo_config)--------查看linux信息和修改linux配置文件
-* [log](My_lib/log_utils/)-----------------------------根据日志大小轮转日志
-* [file_utils](My_lib/file_utils/)---------------------对配置文件进行获取配置以及修改配置
+* [serverinfo_config](My_lib/serverinfo_config)-------- 查看 Linux 信息和修改 Linux 配置文件
+* [log](My_lib/log_utils/)----------------------------- 根据日志大小轮转日志
+* [file_utils](My_lib/file_utils/)--------------------- 对配置文件进行获取配置以及修改配置
 
 ### 1.5 其他
 
-* [mysqlORM](My_lib/mysqlORM/)-------------------------mysqlORM
-* [query_ip](My_lib/query_ip/)-------------------------根据 IP 获取地址位置信息
+* [mysqlORM](My_lib/mysqlORM/)-------------------------MySQLORM
+* [query_ip](My_lib/query_ip/)------------------------- 根据 IP 获取地址位置信息
 
 ### 1.6 XML 处理
 
-* [xmltodict](./My_lib/xmltodict/)---------------------将 xml 转为字典或者字典转为 xml
+* [xmltodict](./My_lib/xmltodict/)--------------------- 将 xml 转为字典或者字典转为 xml
 
 ## 2 Example
 
-* [相关wiki](https://github.com/meetbill/MyPythonLib/wiki)
-* [python 基础学习](./Example/python_base/README.md)
-* [python 交互模式自动补全](./Example/python_interactive/README.md)
+* [相关 wiki](https://github.com/meetbill/MyPythonLib/wiki)
+* [Python 基础学习](./Example/python_base/README.md)
+* [Python 交互模式自动补全](./Example/python_interactive/README.md)
 
 ## 3 相关项目
 
