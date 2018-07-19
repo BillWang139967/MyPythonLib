@@ -50,7 +50,7 @@ class Log(object):
     '''
     log
     '''
-    def __init__(self, filename, level="debug", logid="qiueer", mbs=20, count=10, is_console=True):
+    def __init__(self, filename, level="debug", logid="meetbill", mbs=20, count=10, is_console=True):
         '''
         mbs: how many MB
         count: the count of remain
@@ -60,10 +60,7 @@ class Log(object):
             #print "init,level:",level,"\t","get_map_level:",self._level
             self._filename = filename
             self._logid = logid
-
             self._logger = logging.getLogger(self._logid)
-            
-            
             file_path = os.path.split(self._filename)[0]
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
@@ -71,7 +68,7 @@ class Log(object):
             if not len(self._logger.handlers):
                 self._logger.setLevel(self.get_map_level(self._level))  
                 
-                fmt = '[%(asctime)s] %(levelname)s\n%(message)s'
+                fmt = '[%(asctime)s] %(levelname)s %(message)s'
                 datefmt = '%Y-%m-%d %H:%M:%S'
                 formatter = logging.Formatter(fmt, datefmt)
                 
@@ -138,13 +135,11 @@ class Log(object):
             return logging.CRITICAL
 
 
-if __name__ == "__main__":       
-    from BLog import Log
-    debug=False
+if __name__ == "__main__":
+    debug=True
     logpath = "/tmp/test.log"
-    logger = Log(logpath,level="debug",is_console=debug, mbs=5, count=5)
+    logger = Log(logpath,level="debug",logid="meetbill",is_console=debug, mbs=5, count=5)
 
-    
     logstr="helloworld"
     logger.error(logstr)
     logger.info(logstr)
