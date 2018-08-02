@@ -5,19 +5,19 @@ from __future__ import absolute_import, division, unicode_literals
 import multiprocessing
 import os
 import threading
-from .BLog import Log
+import blog
 import Queue
 
 debug=False
-logpath = "/tmp/mpms.log"
-_logger = Log(logpath,level="debug",is_console=debug, mbs=5, count=5)
+logpath = "./log/mpms.log"
+_logger = blog.Log(logpath,level="debug",logid="mpms",is_console=debug, mbs=5, count=5)
 
 try:
     from typing import Any, Union
 except:
     pass
 
-VERSION = (2, 0, 0, 3)
+VERSION = (2, 0, 0, 4)
 VERSION_STR = "{}.{}.{}.{}".format(*VERSION)
 
 

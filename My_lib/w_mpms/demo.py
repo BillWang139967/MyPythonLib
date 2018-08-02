@@ -14,8 +14,7 @@ Due to many threads, some time-consuming tasks would finish much faster than sin
 from __future__ import unicode_literals, print_function
 from time import time, sleep
 
-from w_lib.mpms import MPMS
-
+import w_lib.mpms
 
 def _worker(index, t=None):
     """
@@ -38,11 +37,7 @@ def main():
     # we will run the benchmarks several times using the following params
     # 下面这些值用于多次运行,看时间
         # Init the poll  # 初始化
-    m = MPMS(
-        _worker,
-        processes=1,
-        threads=10,
-    )
+    m = w_lib.mpms.MPMS(_worker,processes=1,threads=10)
     m.start()  # start and fork subprocess
     start_time = time()  # when we started  # 记录开始时间
 
