@@ -7,6 +7,9 @@ def hello(str_info):
 if __name__ == '__main__':
     import sys, inspect
     import time
+    import os
+    root_path = os.path.split(os.path.realpath(__file__))[0]
+    os.chdir(root_path)
     if len(sys.argv) < 2:
         print "Usage:"
         for k, v in sorted(globals().items(), key=lambda item: item[0]):
