@@ -9,6 +9,7 @@
 # Package for  operations.
 """
 
+import os
 import sys
 import re
 
@@ -76,6 +77,8 @@ def cfg_get(config_file,item,detail=False):
     
     例子:python file_util.py cfg_get ./config s3_addr
     """
+    if not os.path.exists(config_file):
+        return None
     config = _loadconfig(config_file,detail=detail)
     if config.has_key(item):
         print config[item]
