@@ -81,7 +81,6 @@ def cfg_get(config_file,item,detail=False):
         return None
     config = _loadconfig(config_file,detail=detail)
     if config.has_key(item):
-        print config[item]
         return config[item]
     else:
         return None
@@ -144,8 +143,7 @@ def cfg_set(config_file,item, value, commented=False):
         with open(config_file, 'a') as f:
             #########################################
             f.write('\n%s%s = %s\n' % (commented and '#' or '', item, value))
-    print "new"
-    cfg_get(config_file,item, detail=True)
+    #cfg_get(config_file,item, detail=True)
     return True
 
 
@@ -168,6 +166,7 @@ if __name__ == '__main__':
         args = sys.argv[2:]
         try:
             r = func(*args)
+            print r
         except Exception, e:
             print "Usage:"
             print "\t", "python %s %s" % (sys.argv[0],sys.argv[1]),str(func.func_code.co_varnames[:func.func_code.co_argcount])[1:-1].replace(",", "") 
