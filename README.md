@@ -39,7 +39,9 @@
 * [serverinfo_config](My_lib/serverinfo_config)-------- 查看 Linux 信息和修改 Linux 配置文件
 * [log](My_lib/log_utils/)----------------------------- 根据日志大小轮转日志
 * [file_utils](My_lib/file_utils/)--------------------- 对配置文件进行获取配置以及修改配置
-* [validator](My_lib/validator)------------------------ 函数参数检查
+* 参数检查
+  * [validator](My_lib/validator)------------------------ 函数参数检查
+  * [schema](My_lib/schema)------------------------------ 函数参数检查(推荐)
 
 ### 1.5 其他
 
