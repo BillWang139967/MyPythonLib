@@ -101,3 +101,9 @@ Schema 自带的类（Use、And、Or、Regex、Schema 等）都有一个参数 e
 Schema({'name': str, 'age': Use(int, error='年龄必须是整数')}).validate({'name': 'foobar', 'age': 'abc'})
 SchemaError: 年龄必须是整数
 ```
+如
+```
+{
+    schema.Optional('region'): schema.And(lambda n: n in ["bj", "gz"], error="region mast in bj/gz"),
+}
+```
