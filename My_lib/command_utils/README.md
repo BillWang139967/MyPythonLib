@@ -7,12 +7,13 @@
     * [2.1 使用](#21-使用)
     * [2.2 内部原理](#22-内部原理)
         * [2.2.1 根据 globals 内置函数获取全部全局变量](#221-根据-globals-内置函数获取全部全局变量)
+        * [2.2.2 获取函数的参数](#222-获取函数的参数)
 
 <!-- vim-markdown-toc -->
 
 ## 1 command_class
 
-作用：方便命令行调用模块中类中的方法（推荐）,更新程序时仅需添加方法,非常方便
+作用：方便命令行调用模块中类中的方法（推荐）, 更新程序时仅需添加方法，非常方便
 
 ```
 [root@meetbill ~]# python command_class.py
@@ -61,12 +62,13 @@ Traceback (most recent call last):
 TypeError: hello() takes exactly 1 argument (0 given)
 ```
 
-此时会输出方法使用说明(参数说明在函数名下填写)和对应错误信息
+此时会输出方法使用说明（参数说明在函数名下填写）和对应错误信息
 
 ### 2.2 内部原理
 
 #### 2.2.1 根据 globals 内置函数获取全部全局变量
-globals()
+
+globals() 函数会以字典类型返回当前位置的全部全局变量。
 ```
 {
 	'Ceshi_class': < class __main__.Ceshi_class at 0x103b4eae0 > ,
@@ -84,3 +86,22 @@ globals()
 	'hello': < function hello at 0x103b70668 >
 }
 ```
+获取可用的函数和类
+> * globals() 中判断是否为函数：inspect.isfunction(v)
+> * globals() 中判断是否为类：inspect.isclass(v)
+>   * 类中根据 v.__dict__ 判断是否有 staticmethod 或者 classmethod
+
+v.__dict__ 内容如下
+```
+{
+	'__module__': '__main__',
+	'ceshi_func2': < staticmethod object at 0x1039d1590 > ,
+	'__doc__': None,
+	'ceshi_func1': < classmethod object at 0x1039d1558 >
+}
+```
+备注：类中的 staticmethod 和 classmethod ，使用 inspect.isfunction() 判断时为 False, 所以使用 str 进行匹配判断
+
+#### 2.2.2 获取函数的参数
+
+todo
