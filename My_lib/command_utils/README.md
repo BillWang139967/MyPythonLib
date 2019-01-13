@@ -1,13 +1,16 @@
 ## command_utils
 
 <!-- vim-markdown-toc GFM -->
-* [command_class](#command_class)
-* [command](#command)
-    * [使用](#使用)
+
+* [1 command_class](#1-command_class)
+* [2 command](#2-command)
+    * [2.1 使用](#21-使用)
+    * [2.2 内部原理](#22-内部原理)
+        * [2.2.1 根据 globals 内置函数获取全部全局变量](#221-根据-globals-内置函数获取全部全局变量)
 
 <!-- vim-markdown-toc -->
 
-## command_class
+## 1 command_class
 
 作用：方便命令行调用模块中类中的方法（推荐）,更新程序时仅需添加方法,非常方便
 
@@ -34,7 +37,7 @@ optional arguments:
 
 直接输入 `python command_class.py output "hello world"`即可调用此模块 `ceshi_class` 类中的 output 方法
 
-## command
+## 2 command
 
 作用：方便调用模块中的方法
 
@@ -43,7 +46,7 @@ optional arguments:
 Usage:
 command.py hello 'str_info'
 ```
-### 使用
+### 2.1 使用
 
 不太清楚参数的含义时，可以直接执行方法，而不带参数
 ```
@@ -60,3 +63,24 @@ TypeError: hello() takes exactly 1 argument (0 given)
 
 此时会输出方法使用说明(参数说明在函数名下填写)和对应错误信息
 
+### 2.2 内部原理
+
+#### 2.2.1 根据 globals 内置函数获取全部全局变量
+globals()
+```
+{
+	'Ceshi_class': < class __main__.Ceshi_class at 0x103b4eae0 > ,
+	'root_path': '/private/tmp',
+	'__builtins__': < module '__builtin__' (built - in ) > ,
+	'__file__': 'command.py',
+	'inspect': < module 'inspect' from 'xxx/python2.7/inspect.pyc' > ,
+	'__doc__': None,
+	'sys': < module 'sys' (built - in ) > ,
+	'_usage': < function _usage at 0x103c02aa0 > ,
+	'time': < module 'time' from 'xxx/python2.7/lib-dynload/time.so' > ,
+	'__name__': '__main__',
+	'__package__': None,
+	'os': < module 'os' from 'xxx/python2.7/os.pyc' > ,
+	'hello': < function hello at 0x103b70668 >
+}
+```
