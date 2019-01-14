@@ -65,13 +65,16 @@ if __name__ == '__main__':
                 args, __, __, defaults = inspect.getargspec(class_func)
                 if "cls" in args:
                     args.remove("cls")
+                # class_func.func_code.co_varnames[:class_func.func_code.co_argcount] is tuple
+                class_func_args=list(class_func.func_code.co_varnames[:class_func.func_code.co_argcount])
+                if "cls" in class_func_args:
+                    class_func_args.remove("cls")
                 if defaults:
                     print sys.argv[0], class_func_str, str(args[:-len(defaults)])[1:-1].replace(",", ""), \
                         str(["%s=%s" % (a, b) for a, b in zip(
                             args[-len(defaults):], defaults)])[1:-1].replace(",", "")
                 else:
-                    print sys.argv[0], class_func_str, str(
-                        class_func.func_code.co_varnames[:class_func.func_code.co_argcount])[1:-1].replace(",", "")
+                    print sys.argv[0], class_func_str, str(class_func_args)[1:-1].replace(",", "")
         sys.exit(-1)
     if len(sys.argv) < 2:
         _usage()
