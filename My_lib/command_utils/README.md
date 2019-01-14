@@ -104,4 +104,4 @@ v.__dict__ 内容如下
 
 #### 2.2.2 获取函数的参数
 
-todo
+inspect.getargspec(v)

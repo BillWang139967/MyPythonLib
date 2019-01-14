@@ -34,42 +34,50 @@ if __name__ == '__main__':
     root_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(root_path)
 
-    def _usage():
+    def _usage(class_name=None):
         print "Usage:"
-        for k, v in sorted(globals().items(), key=lambda item: item[0]):
-            if inspect.isfunction(v) and k[0] != "_":
-                args, __, __, defaults = inspect.getargspec(v)
+        if class_name is None:
+            for k, v in sorted(globals().items(), key=lambda item: item[0]):
+                if inspect.isfunction(v) and k[0] != "_":
+                    args, __, __, defaults = inspect.getargspec(v)
+                    if defaults:
+                        print sys.argv[0], k, str(args[:-len(defaults)])[1:-1].replace(",", ""), \
+                            str(["%s=%s" % (a, b) for a, b in zip(
+                                args[-len(defaults):], defaults)])[1:-1].replace(",", "")
+                    else:
+                        print sys.argv[0], k, str(v.func_code.co_varnames[:v.func_code.co_argcount])[
+                            1:-1].replace(",", "")
+                if inspect.isclass(v):
+                    print sys.argv[0], k
+            sys.exit(-1)
+        if class_name not in globals():
+            print "not found class_name[%s]" % class_name
+            sys.exit(-1)
+        for class_k, class_v in sorted(
+                globals()[class_name].__dict__.items(), key=lambda item: item[0]):
+            if str(class_v)[0] == "_":
+                continue
+            if str(class_v).startswith("<staticmethod") or str(
+                    class_v).startswith("<classmethod"):
+                class_func_str = "%s.%s" % (class_name, class_k)
+                class_func = eval(class_func_str)
+                args, __, __, defaults = inspect.getargspec(class_func)
+                if "cls" in args:
+                    args.remove("cls")
                 if defaults:
-                    print sys.argv[0], k, str(args[:-len(defaults)])[1:-1].replace(",", ""), \
+                    print sys.argv[0], class_func_str, str(args[:-len(defaults)])[1:-1].replace(",", ""), \
                         str(["%s=%s" % (a, b) for a, b in zip(
                             args[-len(defaults):], defaults)])[1:-1].replace(",", "")
                 else:
-                    print sys.argv[0], k, str(v.func_code.co_varnames[:v.func_code.co_argcount])[
-                        1:-1].replace(",", "")
-            if inspect.isclass(v):
-                for class_k, class_v in sorted(
-                        v.__dict__.items(), key=lambda item: item[0]):
-                    if str(class_v)[0] == "_":
-                        continue
-                    if str(class_v).startswith("<staticmethod") or str(
-                            class_v).startswith("<classmethod"):
-                        class_func_str = "%s.%s" % (k, class_k)
-                        class_func = eval(class_func_str)
-                        args, __, __, defaults = inspect.getargspec(class_func)
-                        if "cls" in args:
-                            args.remove("cls")
-                        if defaults:
-                            print sys.argv[0], class_func_str, str(args[:-len(defaults)])[1:-1].replace(",", ""), \
-                                str(["%s=%s" % (a, b) for a, b in zip(
-                                    args[-len(defaults):], defaults)])[1:-1].replace(",", "")
-                        else:
-                            print sys.argv[0], class_func_str, str(
-                                class_func.func_code.co_varnames[:class_func.func_code.co_argcount])[1:-1].replace(",", "")
+                    print sys.argv[0], class_func_str, str(
+                        class_func.func_code.co_varnames[:class_func.func_code.co_argcount])[1:-1].replace(",", "")
         sys.exit(-1)
     if len(sys.argv) < 2:
         _usage()
     else:
         func_name = sys.argv[1]
+        if func_name in globals() and inspect.isclass(globals()[func_name]):
+            _usage(func_name)
         try:
             func = eval(func_name)
         except NameError:
