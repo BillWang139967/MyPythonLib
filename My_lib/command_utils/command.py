@@ -7,7 +7,7 @@ def hello(str_info, test="world"):
     print "hello %s -- %s" % (test, str_info)
 
 
-class Ceshi_class():
+class CheckCeshiClass():
     @classmethod
     def ceshi_func1(cls, str_info, test="world"):
         """ test classmethod
@@ -36,6 +36,7 @@ if __name__ == '__main__':
 
     def _usage(class_name=None):
         print "Usage:"
+        prefix = "Check"
         if class_name is None:
             for k, v in sorted(globals().items(), key=lambda item: item[0]):
                 if inspect.isfunction(v) and k[0] != "_":
@@ -47,7 +48,7 @@ if __name__ == '__main__':
                     else:
                         print sys.argv[0], k, str(v.func_code.co_varnames[:v.func_code.co_argcount])[
                             1:-1].replace(",", "")
-                if inspect.isclass(v):
+                if inspect.isclass(v) and k.startswith(prefix):
                     print sys.argv[0], k
             sys.exit(-1)
         if class_name not in globals():
