@@ -4,10 +4,9 @@
 * [1 My_lib](#1-my_lib)
     * [1.1 终端界面 / 菜单相关](#11-终端界面--菜单相关)
     * [1.2 进程相关](#12-进程相关)
-    * [1.3 Python 调用 shell](#13-python-调用-shell)
-    * [1.4 配置文件及日志相关](#14-配置文件及日志相关)
-    * [1.5 其他](#15-其他)
-    * [1.6 XML 处理](#16-xml-处理)
+    * [1.3 配置文件及日志相关](#13-配置文件及日志相关)
+    * [1.4 其他](#14-其他)
+    * [1.5 Debug](#15-debug)
 * [2 Example](#2-example)
 * [3 相关项目](#3-相关项目)
 * [4 参加步骤](#4-参加步骤)
@@ -18,39 +17,35 @@
 
 ### 1.1 终端界面 / 菜单相关
 
-* [progressbar](My_lib/progressbar)--------------------Python 程序进度条
-* [ttable](My_lib/ttable)------------------------------Linux 终端表格
-* [command](My_lib/command_utils/)--------------------- 命令行执行加函数参数时，可以直接对函数操作
-* [color](My_lib/color/)------------------------------- 终端 print 颜色
+* Python 程序进度条 ---------------------------[progressbar](My_lib/progressbar)
+* Linux 终端表格 ------------------------------[ttable](My_lib/ttable)
+* 命令行执行加函数参数时，可以直接对函数操作 --[command](My_lib/command_utils/)
+* 终端 print 颜色 -----------------------------[color](My_lib/color/)
 
 ### 1.2 进程相关
 
-* [daemon](My_lib/daemon)------------------------------ 守护进程模板
-* [monitor_process](My_lib/monitor_process)------------ 检测某进程是否存在
-* [mpms](My_lib/mpms/)---------------------------------Python 多进程 - 多线程任务队列
-* [w_mpms](My_lib/w_mpms/)-----------------------------Python 多进程 - 多线程任务队列【简化版】
+* 守护进程模板 --------------------------------[daemon](My_lib/daemon)
+* 检测某进程是否存在 --------------------------[monitor_process](My_lib/monitor_process)
+* Python 多进程 - 多线程任务队列 --------------[mpmt](https://github.com/meetbill/mpmt)
+* Python 调用 shell 库 ------------------------[easyrun](My_lib/easyrun/README.md)
 
-### 1.3 Python 调用 shell
+### 1.3 配置文件及日志相关
 
-* [easyrun](My_lib/easyrun/README.md)------------------Python 调用 shell 库
-
-### 1.4 配置文件及日志相关
-
-* [serverinfo_config](My_lib/serverinfo_config)-------- 查看 Linux 信息和修改 Linux 配置文件
-* [log](My_lib/log_utils/)----------------------------- 根据日志大小轮转日志
-* [file_utils](My_lib/file_utils/)--------------------- 对配置文件进行获取配置以及修改配置
+* 查看 Linux 信息和修改 Linux 配置文件 --------[serverinfo_config](My_lib/serverinfo_config)
+* 根据日志大小轮转日志 ------------------------[log](My_lib/log_utils/)
+* 对配置文件进行获取配置以及修改配置 ----------[file_utils](My_lib/file_utils/)
 * 参数检查
-  * [validator](My_lib/validator)------------------------ 函数参数检查
-  * [schema](My_lib/schema)------------------------------ 函数参数检查(推荐)
+  * 函数参数检查 ------------------------------[schema](My_lib/schema)
+* 将 xml 转为字典或者字典转为 xml -------------[xmltodict](./My_lib/xmltodict/)
 
-### 1.5 其他
+### 1.4 其他
 
-* [mysqlORM](My_lib/mysqlORM/)-------------------------MySQLORM
-* [query_ip](My_lib/query_ip/)------------------------- 根据 IP 获取地址位置信息
+* MySQLORM ------------------------------------[mysqlORM](My_lib/mysqlORM/)
+* 根据 IP 获取地址位置信息 --------------------[query_ip](My_lib/query_ip/)
 
-### 1.6 XML 处理
+### 1.5 Debug
 
-* [xmltodict](./My_lib/xmltodict/)--------------------- 将 xml 转为字典或者字典转为 xml
+* 极简 DeBug 工具 PySnooper -------------------[PySnooper](https://github.com/cool-RR/PySnooper)
 
 ## 2 Example
 
@@ -60,8 +55,9 @@
 
 ## 3 相关项目
 
-* [运维实践指南相关程序](https://github.com/meetbill/op_practice_code)
-* [Linux 运维工具](https://github.com/meetbill/linux_tools)
+> * [运维实践指南相关程序](https://github.com/meetbill/op_practice_code)
+> * [Linux 运维工具](https://github.com/meetbill/linux_tools)
+> * [w_lib](https://github.com/meetbill/w_lib)
 
 ## 4 参加步骤
 
