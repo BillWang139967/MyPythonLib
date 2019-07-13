@@ -54,12 +54,14 @@ def _calc_code(file_name):
         try:
         #    for eachline in f:
         #        lines += 1
-            code_lines = 0       #代码行数
-            comment_lines = 0    #注释行数
-            blank_lines = 0      #空白行数  内容为'\n',strip()后为''
+            code_lines = 0          # 代码行数
+            comment_lines = 0       # 注释行数
+            blank_lines = 0         # 空白行数  内容为'\n',strip()后为''
             is_comment = False
-            start_comment_index = 0 #记录以'''或"""开头的注释位置
+            start_comment_index = 0 # 记录以'''或"""开头的注释位置
+            tota_lines = 0          # 总行数
             for index,line in enumerate(f,start=1):
+                tota_lines += 1
                 line = line.strip() #去除开头和结尾的空白符
                 # 判断多行注释是否已经开始
                 if not is_comment:
@@ -85,7 +87,8 @@ def _calc_code(file_name):
 
         except UnicodeDecodeError:
             pass
-        print("文件 %s/%s 分析完毕，包含[代码行]:%d [空行]:%d [注释行]:%d" %(pwd,file_name,code_lines,blank_lines,comment_lines))
+        assert tota_lines == code_lines + blank_lines + comment_lines
+        print("文件 %s/%s 分析完毕，包含[代码行]:%d [空行]:%d [注释行]:%d [总行]:%d" %(pwd,file_name,code_lines,blank_lines,comment_lines,tota_lines))
     return code_lines
 
 

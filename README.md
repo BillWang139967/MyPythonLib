@@ -52,7 +52,7 @@
 * [相关 wiki](https://github.com/meetbill/MyPythonLib/wiki)
 * [Python 基础学习](./Example/python_base/README.md)
 * [Python 交互模式自动补全](./Example/python_interactive/README.md)
-* [Python 统计代码行数](./Example/python_count)
+* [Python 统计文件夹中代码行数](./Example/python_count)
 
 ## 3 相关项目
 
