@@ -524,3 +524,5 @@ test_marker.py::test_one FAILED
 > * pytest-html: 生成 html 报告
 > * pytest-rerunfailures: 失败重试
 > * pytest-timeout: 超时测试
+
+[Pytest 使用手册](https://learning-pytest.readthedocs.io/zh/latest/)
