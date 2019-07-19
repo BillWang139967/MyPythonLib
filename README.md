@@ -53,6 +53,7 @@
 * [Python 基础学习](./Example/python_base/README.md)
 * [Python 交互模式自动补全](./Example/python_interactive/README.md)
 * [Python 统计文件夹中代码行数](./Example/python_count)
+* [Pytest](./My_lib/pytest)
 
 ## 3 相关项目
 
