@@ -42,6 +42,7 @@
 
 * MySQLORM ------------------------------------[mysqlORM](My_lib/mysqlORM/)
 * 根据 IP 获取地址位置信息 --------------------[query_ip](My_lib/query_ip/)
+* 轻量化 MySQL orm ----------------------------[Peewee](My_lib/peewee)
 
 ### 1.5 Debug
 
