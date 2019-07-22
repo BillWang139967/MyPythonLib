@@ -12,6 +12,9 @@
         * [删](#删)
         * [改](#改)
         * [查](#查)
+* [3 常见问题](#3-常见问题)
+    * [3.1 OperationalError: (2013, 'Lost connection to MySQL server during query')](#31-operationalerror-2013-lost-connection-to-mysql-server-during-query)
+* [4 官方文档](#4-官方文档)
 
 <!-- vim-markdown-toc -->
 Peewee 是一个简单小巧的 Python ORM，它非常容易学习，并且使用起来很直观。
@@ -98,6 +101,10 @@ mysql> desc person;
 | birthday    | date         | NO   |     | NULL    |                |
 | is_relative | tinyint(1)   | NO   |     | NULL    |                |
 +-------------+--------------+------+-----+---------+----------------+
+```
+
+```
+如果使用 autoconnect = True（默认值）初始化数据库，则在使用数据库之前无需显式连接到数据库。 明确地管理连接被认为是最佳实践，因此可以考虑禁用自动连接行为。
 ```
 #### 第二种方式：
 已经存在过数据库，则直接通过 python -m pwiz 批量创建 Model。
@@ -186,3 +193,15 @@ persons = Person.select().where(Person.is_relative == True)
 for p in persons:
     print(p.name, p.birthday, p.is_relative)
 ```
+## 3 常见问题
+### 3.1 OperationalError: (2013, 'Lost connection to MySQL server during query')
+
+[issue](https://github.com/coleifer/peewee/issues/961)
+
+处理方法：
+
+目前是通过每次访问都重新创建连接解决
+
+## 4 官方文档
+
+[官方文档](http://docs.peewee-orm.com/en/latest/peewee/database.html#using-mysql)
