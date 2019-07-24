@@ -7,6 +7,7 @@
     * [1.3 配置文件及日志相关](#13-配置文件及日志相关)
     * [1.4 其他](#14-其他)
     * [1.5 Debug](#15-debug)
+    * [1.6 db](#16-db)
 * [2 Example](#2-example)
 * [3 相关项目](#3-相关项目)
 * [4 参加步骤](#4-参加步骤)
@@ -40,13 +41,17 @@
 
 ### 1.4 其他
 
-* MySQLORM ------------------------------------[mysqlORM](My_lib/mysqlORM/)
 * 根据 IP 获取地址位置信息 --------------------[query_ip](My_lib/query_ip/)
-* 轻量化 MySQL orm ----------------------------[Peewee](My_lib/peewee)
 
 ### 1.5 Debug
 
 * 极简 DeBug 工具 PySnooper -------------------[PySnooper](https://github.com/cool-RR/PySnooper)
+
+### 1.6 db
+
+* MySQLORM ------------------------------------[mysqlORM](My_lib/mysqlORM/)
+* 轻量化 MySQL orm ----------------------------[Peewee](My_lib/peewee)
+* Python 连接 MySQL 的库 PyMySQL --------------[PyMySQL](My_lib/pymysql)
 
 ## 2 Example
 
