@@ -3,6 +3,12 @@
 <!-- vim-markdown-toc GFM -->
 
 * [1 基本知识](#1-基本知识)
+    * [1.1 字段](#11-字段)
+        * [字段类型表](#字段类型表)
+        * [字段初始参数](#字段初始参数)
+        * [字段默认值](#字段默认值)
+        * [外键字段](#外键字段)
+        * [日期字段](#日期字段)
 * [2 实践](#2-实践)
     * [2.1 定义 Model，建立数据库](#21-定义-model建立数据库)
         * [第一种方式：](#第一种方式)
@@ -12,9 +18,13 @@
         * [删](#删)
         * [改](#改)
         * [查](#查)
-* [3 常见问题](#3-常见问题)
-    * [3.1 OperationalError: (2013, 'Lost connection to MySQL server during query')](#31-operationalerror-2013-lost-connection-to-mysql-server-during-query)
-* [4 官方文档](#4-官方文档)
+* [3 连接池](#3-连接池)
+    * [3.1 为什么要显式的关闭连接](#31-为什么要显式的关闭连接)
+    * [3.2 推荐姿势](#32-推荐姿势)
+        * [手动关闭实例](#手动关闭实例)
+* [4 常见问题](#4-常见问题)
+    * [4.1 OperationalError: (2013, 'Lost connection to MySQL server during query')](#41-operationalerror-2013-lost-connection-to-mysql-server-during-query)
+* [5 官方文档](#5-官方文档)
 
 <!-- vim-markdown-toc -->
 Peewee 是一个简单小巧的 Python ORM，它非常容易学习，并且使用起来很直观。
@@ -40,6 +50,152 @@ Peewee 是一个简单小巧的 Python ORM，它非常容易学习，并且使�
 > * 一个 model 类实例化对象则代表数据库中的一行。
 
 Peewee 的实现原理可以结合 [道生一，一生二，二生三，三生万物](https://github.com/meetbill/redis-orm/wiki/metaclass)
+
+### 1.1 字段
+
+
+字段类用于描述模型属性到数据库字段的映射，每一个字段类型都有一个相应的 SQL 存储类型，如 `varchar`, `int`。并且python的数据类型和 SQL 存储类型之间的转换是透明的。
+
+在创建模型类时，字段被定义为类属性。有一种特殊类型的字段 `ForeignKeyField`，可以以更直观的方式表示模型之间的外键关系。
+
+```python
+class Message(Model):
+    user = ForeignKeyField(User, backref='messages')
+    body = TextField()
+    send_date = DateTimeField()
+```
+
+这允许你编写如下的代码：
+
+```python
+print(some_message.user.username)
+for message in some_user.messages:
+    print(message.body)
+```
+
+#### 字段类型表
+
+|字段类型|	Sqlite	|Postgresql	|MySQL|
+|-|-|-|-|
+|IntegerField	|integer|	integer	|integer|
+|BigIntegerField|	integer|	bigint|	bigint|
+|SmallIntegerField|	integer|	smallint|	smallint|
+|AutoField|	integer	|serial|	integer|
+|FloatField|	real|	real|	real|
+|DoubleField|	real|	double precision	|double precision|
+|DecimalField|decimal|	numeric|	numeric|
+|CharField|	varchar	|varchar|	varchar|
+|FixedCharField|	char|	char|	char|
+|TextField|	text	|text	|longtext|
+|BlobField|	blob|	bytea|	blob|
+|BitField|	integer	|bigint|	bigint|
+|BigBitField|	blob|	bytea|	blob|
+|UUIDField|	text|	uuid|	varchar(40)|
+|DateTimeField|	datetime|	timestamp	|datetime|
+|DateField|	date	|date|	date|
+|TimeField	|time|	time|	time|
+|TimestampField|	integer|	integer|	integer|
+|IPField|	integer|	bigint|	bigint|
+|BooleanField	|integer|	boolean|	bool|
+|BareField|	untyped|	不支持|	不支持|
+|ForeignKeyField|	integer	|integer|	integer|
+
+#### 字段初始参数
+
+所有字段类型接受的参数与默认值
+
++ `null = False` – 布尔值，表示是否允许存储空值
++ `index = False` – 布尔值，表示是否在此列上创建索引
++ `unique = False` – 布尔值，表示是否在此列上创建唯一索引
++ `column_name = None` – 如果和属性名不同，底层的数据库字段使用这个值
++ `default = None` – 字段默认值，可以是一个函数，将使用函数返回的值
++ `primary_key = False` – 布尔值，此字段是否是主键
++ `constraints = None` - 一个或多个约束的列表 例如：`[Check('price > 0')]`
++ `sequence = None` – 序列填充字段（如果后端数据库支持）
++ `collation = None` – 用于排序字段/索引的排序规则
++ `unindexed = False` – 表示虚拟表上的字段应该是未索引的（仅用于sqlite）
++ `choices = None` – 一个可选的迭代器，包含两元数组`（value, display）`
++ `help_text = None` – 表示字段的帮助文本
++ `verbose_name = None` – 表示用户友好的字段名
+
+一些字段的特殊参数
+
+|字段类型|	特殊参数|
+|-|-|
+|CharField|	max_length|
+|FixedCharField	|max_length|
+|DateTimeField|	formats|
+|DateField|	formats|
+|TimeField|	formats|
+|TimestampField	|resolution, utc|
+|DecimalField|	max_digits, decimal_places, auto_round, rounding|
+|ForeignKeyField	|model, field, backref, on_delete, on_update, extra|
+|BareField|	coerce|
+
+
+#### 字段默认值
+
+创建对象时，peewee 可以为字段提供默认值，例如将字段的默认值`null`设置为`0`
+```python
+class Message(Model):
+    context = TextField()
+    read_count = IntegerField(default=0)
+```
+
+如果想提供一个动态值，比如当前时间，可以传入一个函数
+
+```python
+class Message(Model):
+    context = TextField()
+    timestamp = DateTimeField(default=datetime.datetime.now)
+```
+
+数据库还可以提供字段的默认值。虽然 peewee 没有明确提供设置服务器端默认值的 API，但您可以使用 `constraints` 参数来指定服务器默认值：
+
+```python
+class Message(Model):
+    context = TextField()
+    timestamp = DateTimeField(constraints=[SQL('DEFAULT CURRENT_TIMESTAMP')])
+```
+
+#### 外键字段
+
+`foreignkeyfield` 是一种特殊的字段类型，允许一个模型引用另一个模型。通常外键将包含与其相关的模型的主键（但您可以通过指定一个字段来指定特定的列）。
+
+可以通过追加 `_id` 的外键字段名称来访问原始外键值
+
+```python
+tweets = Tweet.select()
+for tweet in tweets:
+    # Instead of "tweet.user", we will just get the raw ID value stored
+    # in the column.
+    print(tweet.user_id, tweet.message)
+```
+
+`ForeignKeyField` 允许将反向引用属性绑定到目标模型。隐含地，这个属性将被命名为 `classname_set`，其中 classname 是类的小写名称，但可以通过参数覆盖 backref：
+
+```python
+class Message(Model):
+    from_user = ForeignKeyField(User)
+    to_user = ForeignKeyField(User, backref='received_messages')
+    text = TextField()
+
+for message in some_user.message_set:
+    # We are iterating over all Messages whose from_user is some_user.
+    print(message)
+
+for message in some_user.received_messages:
+    # We are iterating over all Messages whose to_user is some_user
+    print(message)
+```
+
+#### 日期字段
+
+`DateField` `TimeField` 和 `DateTimeField` 字段
+
+`DateField` 包含 `year` `month` `day`
+`TimeField` 包含 `hour` `minute` `second`
+`DateTimeField` 包含以上所有
 
 ## 2 实践
 
@@ -148,7 +304,7 @@ class Person(BaseModel):
 直接创建示例，然后使用 save() 就添加了一条新数据
 ```
 # 添加一条数据
-p = Person(name='liuchungui', birthday=date(1990, 12, 20), is_relative=True)
+p = Person(name='liuchungui', birthday='1990-12-20', is_relative=True)
 p.save()
 ```
 
@@ -159,7 +315,7 @@ p.save()
 Person.delete().where(Person.name == 'perter').execute()
 
 # 已经实例化的数据，使用 delete_instance
-p = Person(name='liuchungui', birthday=date(1990, 12, 20), is_relative=False)
+p = Person(name='liuchungui', birthday='1990-12-20', is_relative=False)
 p.id = 1
 p.save()
 p.delete_instance()
@@ -169,12 +325,12 @@ p.delete_instance()
 若是，已经添加过数据的的实例或查询到的数据实例，且表拥有 primary key 时，此时使用 save() 就是修改数据；若是未拥有实例，则使用 update().where() 进行更新数据。
 ```
 # 已经实例化的数据，指定了 id 这个 primary key, 则此时保存就是更新数据
-p = Person(name='liuchungui', birthday=date(1990, 12, 20), is_relative=False)
+p = Person(name='liuchungui', birthday="1990-12-20", is_relative=False)
 p.id = 1
 p.save()
 
 # 更新 birthday 数据
-q = Person.update({Person.birthday: date(1983, 12, 21)}).where(Person.name == 'liuchungui')
+q = Person.update({Person.birthday: "1983-12-21"}).where(Person.name == 'liuchungui')
 q.execute()
 ```
 #### 查
@@ -193,8 +349,106 @@ persons = Person.select().where(Person.is_relative == True)
 for p in persons:
     print(p.name, p.birthday, p.is_relative)
 ```
-## 3 常见问题
-### 3.1 OperationalError: (2013, 'Lost connection to MySQL server during query')
+## 3 连接池
+
+```
+import db_url
+mysql_config_url="mysql+pool://root:password@127.0.0.1:3306/test?max_connections=300&stale_timeout=300"
+db = db_url.connect(url=mysql_config_url)
+```
+peewee 的连接池，使用时需要显式的关闭连接。
+### 3.1 为什么要显式的关闭连接
+
+```
+def _connect(self, *args, **kwargs):
+    while True:
+        try:
+            # Remove the oldest connection from the heap.
+            ts, conn = heapq.heappop(self._connections)  # _connections 是连接实例的 list(pool)
+            key = self.conn_key(conn)
+        except IndexError:
+            ts = conn = None
+            logger.debug('No connection available in pool.')
+            break
+        else:
+            if self._is_closed(key, conn):
+                # This connecton was closed, but since it was not stale
+                # it got added back to the queue of available conns. We
+                # then closed it and marked it as explicitly closed, so
+                # it's safe to throw it away now.
+                # (Because Database.close() calls Database._close()).
+                logger.debug('Connection %s was closed.', key)
+                ts = conn = None
+                self._closed.discard(key)
+            elif self.stale_timeout and self._is_stale(ts):
+                # If we are attempting to check out a stale connection,
+                # then close it. We don't need to mark it in the "closed"
+                # set, because it is not in the list of available conns
+                # anymore.
+                logger.debug('Connection %s was stale, closing.', key)
+                self._close(conn, True)
+                self._closed.discard(key)
+                ts = conn = None
+            else:
+                break
+    if conn is None:
+        if self.max_connections and (
+                len(self._in_use) >= self.max_connections):
+            raise ValueError('Exceeded maximum connections.')
+        conn = super(PooledDatabase, self)._connect(*args, **kwargs)
+        ts = time.time()
+        key = self.conn_key(conn)
+        logger.debug('Created new connection %s.', key)
+
+    self._in_use[key] = ts  # 使用中的数据库连接实例 dict
+    return conn
+```
+
+根据 pool 库中的`_connect` 方法的代码可知：每次在建立数据库连接时，会检查连接实例是否超时。但是需要注意一点：使用中的数据库连接实例（_in_use dict 中的数据库连接实例），是不会在创建数据库连接时，检查是否超时的。
+
+```
+因为这段代码中，每次创建连接实例，都是在`_connections(pool)` 取实例，如果有的话就判断是否超时；如果没有的话就新建。
+
+然而，使用中的数据库连接并不在 `_connections` 中，所以每次创建数据库连接实例时，并没有检测使用中的数据库连接实例是否超时。
+
+只有调用连接池实例的 `_close` 方法。执行这个方法后，才会把使用后的连接实例放回到 `_connections (pool)`。
+```
+close 方法
+
+```
+def _close(self, conn, close_conn=False):
+    key = self.conn_key(conn)
+    if close_conn:
+        self._closed.add(key)
+        super(PooledDatabase, self)._close(conn)  # 关闭数据库连接的方法
+    elif key in self._in_use:
+        ts = self._in_use[key]
+        del self._in_use[key]
+        if self.stale_timeout and self._is_stale(ts):   # 到这里才会判断_in_use 中的连接实例是否超时
+            logger.debug('Closing stale connection %s.', key)
+            super(PooledDatabase, self)._close(conn)   # 超时的话，关闭数据库连接
+        else:
+            logger.debug('Returning %s to pool.', key)
+            heapq.heappush(self._connections, (ts, conn))  # 没有超时的话，放回到 pool 中
+```
+
+如果不显式的关闭连接，会出现的问题
+
+> * 每次都是新建数据库连接，因为 pool 中没有数据库连接实例。会导致稍微有一点并发量就会返回 Exceeded maximum connections. 错误
+> * MySQL 也是有 timeout 的，如果一个连接长时间没有请求的话，MySQL Server 就会关闭这个连接，但是，peewee 的已建立的连接实例，并不知道 MySQL Server 已经关闭了，再去通过这个连接请求数据的话，就会返回 Error 2006: “MySQL server has gone away”错误
+
+### 3.2 推荐姿势
+
+每次操作完数据库就关闭连接实例
+
+#### 手动关闭实例
+```
+ if not database.is_closed():
+        database.close()
+
+```
+## 4 常见问题
+### 4.1 OperationalError: (2013, 'Lost connection to MySQL server during query')
 
 [issue](https://github.com/coleifer/peewee/issues/961)
 
@@ -202,6 +456,6 @@ for p in persons:
 
 目前是通过每次访问都重新创建连接解决
 
-## 4 官方文档
+## 5 官方文档
 
 [官方文档](http://docs.peewee-orm.com/en/latest/peewee/database.html#using-mysql)
