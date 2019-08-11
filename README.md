@@ -49,7 +49,6 @@
 
 ### 1.6 db
 
-* MySQLORM ------------------------------------[mysqlORM](My_lib/mysqlORM/)
 * 轻量化 MySQL orm ----------------------------[Peewee](My_lib/peewee)
 * Python 连接 MySQL 的库 PyMySQL --------------[PyMySQL](My_lib/pymysql)
 
