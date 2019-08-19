@@ -505,7 +505,7 @@ db.create_tables([User])
 print("-------------CREATE")
 
 # 创建User对象
-user = User(email="meetbill@163.com", username="meetbill", password="meet")
+user = User.create(email="meetbill@163.com", username="meetbill", password="meet")
 # 保存User
 user.save()
 

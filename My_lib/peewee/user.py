@@ -8,10 +8,12 @@
 # Description:
 
 """
-from xlib.db.peewee import *
 from faker import Factory
 from datetime import datetime
+import hashlib
+
 import xlib.db
+from xlib.db.peewee import *
 
 # Create an instance of a Database
 mysql_config_url="mysql+pool://root:123456@127.0.0.1:3306/test?max_connections=300&stale_timeout=300"
@@ -27,6 +29,8 @@ class User(Model):
     username = CharField(unique=True, max_length=32)
     password = CharField(null=True, max_length=64)
     createTime = DateTimeField(column_name="create_time", default=datetime.now)
+    role = CharField(null=False,max_length=64,default="")
+
     class Meta:
         database = db
         table_name = 'tb_user'
@@ -35,6 +39,13 @@ class User(Model):
 
     def __str__(self):
         return "User(id：{} email：{} username：{} password：{} createTime: {})".format(self.id, self.email, self.username, self.password, self.createTime)
+
+    @staticmethod
+    def create_password(raw):
+        return hashlib.new("md5", raw).hexdigest()
+
+    def check_password(self, raw):
+        return hashlib.new("md5", raw).hexdigest() == self.password
 
 
 db.connect()
@@ -45,7 +56,10 @@ db.create_tables([User])
 print("-------------CREATE")
 
 # 创建User对象
-user = User(email="meetbill@163.com", username="meetbill", password="meet")
+# 明文密码
+#user = User.create(email="meetbill@163.com", username="meetbill", password="meet")
+password='111111'
+user = User.create(email="meetbill@163.com", username="meetbill", password=User.create_password(password),role="admin")
 # 保存User
 user.save()
 
@@ -62,6 +76,9 @@ User.insert_many(fake_users).execute()
 
 """ RETRIEVE/GET/FIND """
 print("-------------RETRIEVE/GET/FIND")
+user = User().select().where(User.id == 1).get()
+if user.check_password(password):
+    print "check password OK"
 
 user = User().select().where(User.id != 1).get()
 print(user)
