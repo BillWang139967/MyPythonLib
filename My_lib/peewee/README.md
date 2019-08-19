@@ -56,7 +56,7 @@ Peewee 的实现原理可以结合 [道生一，一生二，二生三，三生�
 ### 1.1 字段
 
 
-字段类用于描述模型属性到数据库字段的映射，每一个字段类型都有一个相应的 SQL 存储类型，如 `varchar`, `int`。并且python的数据类型和 SQL 存储类型之间的转换是透明的。
+字段类用于描述模型属性到数据库字段的映射，每一个字段类型都有一个相应的 SQL 存储类型，如 `varchar`, `int`。并且 python 的数据类型和 SQL 存储类型之间的转换是透明的。
 
 在创建模型类时，字段被定义为类属性。有一种特殊类型的字段 `ForeignKeyField`，可以以更直观的方式表示模型之间的外键关系。
 
@@ -114,8 +114,8 @@ for message in some_user.messages:
 + `primary_key = False` – 布尔值，此字段是否是主键
 + `constraints = None` - 一个或多个约束的列表 例如：`[Check('price > 0')]`
 + `sequence = None` – 序列填充字段（如果后端数据库支持）
-+ `collation = None` – 用于排序字段/索引的排序规则
-+ `unindexed = False` – 表示虚拟表上的字段应该是未索引的（仅用于sqlite）
++ `collation = None` – 用于排序字段 / 索引的排序规则
++ `unindexed = False` – 表示虚拟表上的字段应该是未索引的（仅用于 sqlite）
 + `choices = None` – 一个可选的迭代器，包含两元数组`（value, display）`
 + `help_text = None` – 表示字段的帮助文本
 + `verbose_name = None` – 表示用户友好的字段名
@@ -305,11 +305,36 @@ class Person(BaseModel):
 #### 增
 直接创建示例，然后使用 save() 就添加了一条新数据
 ```
-# 添加一条数据
+# 第一种方法插入单条数据
+# 不会返回插入的自增 pk，而是成功返回 1，失败返回 0；
 p = Person(name='liuchungui', birthday='1990-12-20', is_relative=True)
 p.save()
+
+
+# 第二种方法插入单条数据
+# 返回值是一个 Person 对象
+p = Person.create(name='liuchungui', birthday='1990-12-20', is_relative=True)
+
+# 第三种方法插入单条数据
+# 返回值是整型,职位 id
+p = Person.insert(name='liuchungui', birthday='1990-12-20', is_relative=True)
 ```
 
+批量写数据
+
+```
+def create():
+    """批量添加数据"""
+    data_source = [
+        (avartar, 'Catherine', '2', pwd),
+        (avartar, 'Jane', '2', pwd),
+        (avartar 'Mary', '2', pwd),
+    ]
+    field = [User.avartar, User.uname, User.gender, User.password]
+    uid = User.insert_many(data_source, field).execute()
+    print('uid=%d' % uid)
+
+```
 #### 删
 ```
 使用 delete().where().execute() 进行删除，where() 是条件，execute() 负责执行语句。若是已经查询出来的实例，则直接使用 delete_instance() 删除。
@@ -504,14 +529,14 @@ db.create_tables([User])
 """ CREATE """
 print("-------------CREATE")
 
-# 创建User对象
+# 创建 User 对象
 user = User.create(email="meetbill@163.com", username="meetbill", password="meet")
-# 保存User
+# 保存 User
 user.save()
 
-# 创建faker工厂对象
+# 创建 faker 工厂对象
 faker = Factory.create()
-# 利用faker创建多个User对象
+# 利用 faker 创建多个 User 对象
 fake_users = [{
     'username': faker.name(),
     'password': faker.word(),
@@ -548,7 +573,7 @@ effect_count = User.delete().where(User.id >= 4).execute()
 print(effect_count)
 
 ```
-结果:
+结果：
 ```
 -------------CREATE
 -------------RETRIEVE/GET/FIND

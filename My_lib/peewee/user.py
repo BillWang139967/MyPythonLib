@@ -58,10 +58,11 @@ print("-------------CREATE")
 # 创建User对象
 # 明文密码
 #user = User.create(email="meetbill@163.com", username="meetbill", password="meet")
+# 保存User
+#user.save()
+
 password='111111'
 user = User.create(email="meetbill@163.com", username="meetbill", password=User.create_password(password),role="admin")
-# 保存User
-user.save()
 
 # 创建faker工厂对象
 faker = Factory.create()
