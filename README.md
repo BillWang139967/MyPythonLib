@@ -7,7 +7,7 @@
     * [1.3 配置文件及日志相关](#13-配置文件及日志相关)
     * [1.4 其他](#14-其他)
     * [1.5 Debug](#15-debug)
-    * [1.6 db](#16-db)
+    * [1.6 DB/Redis](#16-dbredis)
 * [2 Example](#2-example)
 * [3 相关项目](#3-相关项目)
 * [4 参加步骤](#4-参加步骤)
@@ -47,10 +47,11 @@
 
 * 极简 DeBug 工具 PySnooper -------------------[PySnooper](https://github.com/cool-RR/PySnooper)
 
-### 1.6 db
+### 1.6 DB/Redis
 
 * 轻量化 MySQL orm ----------------------------[Peewee](My_lib/peewee)
 * Python 连接 MySQL 的库 PyMySQL --------------[PyMySQL](My_lib/pymysql)
+* 分析 Redis RDB 工具 -------------------------[redis-rdb-tools](My_lib/redis-rdb-tools)
 
 ## 2 Example
 
