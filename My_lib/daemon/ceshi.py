@@ -8,9 +8,13 @@
 # Description:
 
 """
+import time
+
 def ceshi():
-    print "xxx"
-    while 1:
-        print "ffff"
+    while True:
+        print "helloworld"
+        print "Start : %s" % time.ctime()
+        time.sleep(1)
+        print "End : %s" % time.ctime()
 if __name__ == "__main__":
     ceshi()

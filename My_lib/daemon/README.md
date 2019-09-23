@@ -6,7 +6,6 @@
 * 运行程序
 
 ```
-pid_file = "/var/run/test.pid"
 class MyDaemon(Daemon):
     def run(self):
         ##########################################需要修改部分
