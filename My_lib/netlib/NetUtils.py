@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 from inspect import currentframe
 import socket
 import select
@@ -6,28 +6,31 @@ import time
 
 DEBUG = False
 
-#{{{get_linenumber
+
 def get_linenumber():
     cf = currentframe()
     return str(cf.f_back.f_back.f_lineno)
-#}}}
 
-#{{{dbgPrint
+
 def dbgPrint(msg):
     if DEBUG:
         print get_linenumber(), msg
-#}}}
 
-import signal, functools
 
-class TimeoutError(Exception):pass
+import signal
+import functools
 
-#{{{timeout
+
+class TimeoutError(Exception):
+    pass
+
+
 def timeout(seconds, error_message="function call time out"):
-    
+
     def decorated(func):
         def _handle_timeout(signum, frame):
-            raise TimeoutError(error_message);
+            raise TimeoutError(error_message)
+
         def wrapper(*args, **kwargs):
             signal.signal(signal.SIGALRM, _handle_timeout)
             signal.alarm(seconds)
@@ -38,14 +41,13 @@ def timeout(seconds, error_message="function call time out"):
                 return result
         return functools.wraps(func)(wrapper)
     return decorated
-#}}}
+
 
 @timeout(5)
-#{{{connect_timeout
 def connect_timeout(socket, host_port):
     return socket.connect(host_port)
-#}}}
-#{{{sendData_mh
+
+
 def sendData_mh(sock_list, host_list, data, single_host_retry=3):
     """
     saver_list = [host1:port, host2:port, host3:port]
@@ -60,8 +62,9 @@ def sendData_mh(sock_list, host_list, data, single_host_retry=3):
         retry = 0
         while retry < single_host_retry:
             try:
-                if sock_list[0] == None:
-                    sock_list[0] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                if sock_list[0] is None:
+                    sock_list[0] = socket.socket(
+                        socket.AF_INET, socket.SOCK_STREAM)
                     sock_list[0].settimeout(5)
                     sock_list[0].connect((host, port))
                 d = data
@@ -74,23 +77,23 @@ def sendData_mh(sock_list, host_list, data, single_host_retry=3):
                 if buf[:2] == "OK":
                     retry = 0
                     break
-                
-            except:
+
+            except BaseException:
                 sock_list[0].close()
                 sock_list[0] = None
                 retry += 1
-#}}}
-#{{{sendData
-def sendData(sock_l, host, port, data):               
+
+
+def sendData(sock_l, host, port, data):
     retry = 0
     while retry < 3:
         try:
-            if sock_l[0] == None:
+            if sock_l[0] is None:
                 sock_l[0] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock_l[0].connect((host, port))
-                dbgPrint("\n-- start connect %s:%d" %(host, port))
+                dbgPrint("\n-- start connect %s:%d" % (host, port))
             d = data
-            sock_l[0].sendall("%010d%s" %(len(data), data))
+            sock_l[0].sendall("%010d%s" % (len(data), data))
             count = sock_l[0].recv(10)
             if not count:
                 raise Exception("recv error")
@@ -99,13 +102,13 @@ def sendData(sock_l, host, port, data):
             if buf[:2] == "OK":
                 retry = 0
                 break
-        except:
+        except BaseException:
             sock_l[0].close()
             sock_l[0] = None
             retry += 1
-#}}}           
 # initial status for state machine
-#{{{STATE
+
+
 class STATE:
     def __init__(self):
         self.state = "accept"
@@ -129,7 +132,7 @@ class STATE:
             dbgPrint(" - - buff_write: %s" % self.buff_write)
             dbgPrint(" - - buff_read:  %s" % self.buff_read)
             dbgPrint(" - - sock_obj:   %s" % self.sock_obj)
-#}}}
+
 
 if __name__ == "__main__":
     import json
@@ -140,8 +143,8 @@ if __name__ == "__main__":
         s.connect(("127.0.0.1", 9999))
     except socket.error as err:
         print err
-    while 1:
-        print "send data to %s %s" %("127.0.0.1", "9999")
+    while True:
+        print "send data to %s %s" % ("127.0.0.1", "9999")
         data = "hello world"
-        sendData(sock_l,'127.0.0.1', '9999', json.dumps(data))
+        sendData(sock_l, '127.0.0.1', '9999', json.dumps(data))
         time.sleep(5)
