@@ -28,11 +28,14 @@ class Daemon(object):
                  pidfile='./run/daemon.pid',
                  stdin='/dev/null',
                  stdout='./log/stdout.log',
-                 stderr='./log/stderr.log'):
+                 stderr='./log/stderr.log',
+                 home_dir="/"
+                 ):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
         self.pidfile = pidfile
+        self.home_dir = home_dir
 
     def daemonize(self):
         """
@@ -52,7 +55,8 @@ class Daemon(object):
             sys.exit(1)
 
         # decouple from parent environment
-        os.chdir("/")
+        # 防止占用别的路径的 working dir 的 fd，导致一些 block 不能 unmount ,默认 home_dir 为根目录
+        os.chdir(self.home_dir)
         # 创建新会话，子进程成为新会话的首进程（session leader）
         '''
         setsid()函数可以建立一个对话期。
@@ -75,6 +79,11 @@ class Daemon(object):
 
         '''
         现在，进程已经成为无终端的会话组长。但它可以重新申请打开一个控制终端。可以通过使进程不再成为会话组长来禁止进程重新打开控制终端：
+
+        关于两次fork
+            第二个fork 不是必须的，只是为了防止进程打开控制终端。
+            打开一个控制终端的条件是该进程必须是 session leader。第一次 fork，setsid 之后，子进程成为 session leader，进程可以打开终端；第二次 fork 产生的进程，不再是 session leader，进程则无法打开终端。
+            也就是说，只要程序实现得好，控制程序不主动打开终端，无第二次fork亦可。
         '''
         # do second fork
         try:
