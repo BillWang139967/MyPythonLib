@@ -9,6 +9,8 @@
     * [1.5 Debug](#15-debug)
     * [1.6 DB/Redis](#16-dbredis)
 * [2 Example](#2-example)
+    * [2.1 教程](#21-教程)
+    * [2.2 相关笔记](#22-相关笔记)
 * [3 相关项目](#3-相关项目)
 * [4 参加步骤](#4-参加步骤)
 
@@ -55,6 +57,12 @@
 
 ## 2 Example
 
+### 2.1 教程
+
+* [微软 Python 教程](https://github.com/microsoft/c9-python-getting-started)
+
+### 2.2 相关笔记
+
 * [相关 wiki](https://github.com/meetbill/MyPythonLib/wiki)
 * [Python 基础学习](./Example/python_base/README.md)
 * [Python 交互模式自动补全](./Example/python_interactive/README.md)
@@ -65,7 +73,7 @@
 
 > * [运维实践指南相关程序](https://github.com/meetbill/op_practice_code)
 > * [Linux 运维工具](https://github.com/meetbill/linux_tools)
-> * [w_lib](https://github.com/meetbill/w_lib)
+> * Python 常用库集合[星图](https://github.com/meetbill/x-lib)
 
 ## 4 参加步骤
 
