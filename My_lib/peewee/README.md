@@ -491,6 +491,11 @@ def _close(self, conn, close_conn=False):
 
 ### 6.1 user
 
+> ImportError: No module named dateutil //faker 使用
+```
+pip  install python-dateutil
+```
+
 ```python
 
 from xlib.db.peewee import *
@@ -550,28 +555,45 @@ print("-------------RETRIEVE/GET/FIND")
 
 user = User().select().where(User.id != 1).get()
 print(user)
+# User(id：2 email：bcalderon@hotmail.com username：Victoria Sullivan password：off createTime: 2019-08-15 23:25:59)
+
 user = User.select().where(User.username.contains("meet")).get()
 print(user)
+# User(id：1 email：meetbill@163.com username：meetbill password：meet createTime: 2019-08-15 23:25:59)
+
 count = User.select().filter(User.id >= 3).count()
 print(count)
+# 4
+
 users = User.select().order_by(User.email)
 for u in users:
     print(u)
+"""
+User(id：2 email：bcalderon@hotmail.com username：Victoria Sullivan password：off createTime: 2019-08-15 23:25:59)
+User(id：6 email：evanscatherine@johnson.com username：Tracy Santiago password：you createTime: 2019-08-15 23:25:59)
+User(id：1 email：meetbill@163.com username：meetbill password：meet createTime: 2019-08-15 23:25:59)
+User(id：5 email：nking@yahoo.com username：Marissa Mckay password：last createTime: 2019-08-15 23:25:59)
+User(id：4 email：thopkins@powers-booth.biz username：Brian Wise password：country createTime: 2019-08-15 23:25:59)
+User(id：3 email：xaviercastillo@robinson.com username：Victoria Turner password：him createTime: 2019-08-15 23:25:59)
+"""
 
 """ UPDATE """
 print("-------------UPDATE")
 
 effect_count = User.update({User.username: "lisi", User.email: "ls@163.com"}).where(User.id == 1).execute()
 print(effect_count)
+# 1
 
 """ DELETE """
 print("-------------DELETE")
 
 effect_count = User().delete_by_id(6)
 print(effect_count)
+# 1
+
 effect_count = User.delete().where(User.id >= 4).execute()
 print(effect_count)
-
+# 2
 ```
 结果：
 ```
@@ -592,3 +614,4 @@ User(id：3 email：xaviercastillo@robinson.com username：Victoria Turner passw
 1
 2
 ```
+
