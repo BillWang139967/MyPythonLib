@@ -27,6 +27,8 @@
 * [5 官方文档](#5-官方文档)
 * [6 实践](#6-实践)
     * [6.1 user](#61-user)
+* [7 源码说明](#7-源码说明)
+* [8 传送门](#8-传送门)
 
 <!-- vim-markdown-toc -->
 Peewee 是一个简单小巧的 Python ORM，它非常容易学习，并且使用起来很直观。
@@ -316,7 +318,7 @@ p.save()
 p = Person.create(name='liuchungui', birthday='1990-12-20', is_relative=True)
 
 # 第三种方法插入单条数据
-# 返回值是整型,职位 id
+# 返回值是整型，职位 id
 p = Person.insert(name='liuchungui', birthday='1990-12-20', is_relative=True)
 ```
 
@@ -615,3 +617,30 @@ User(id：3 email：xaviercastillo@robinson.com username：Victoria Turner passw
 2
 ```
 
+## 7 源码说明
+
+> self._state = _ConnectionLocal()
+```
+# 属性
+self.closed = True
+self.conn = None
+self.ctx = []
+self.transactions = []
+
+# 方法
+reset(self)
+set_connection(self, conn)
+
+# 使用
+操作 db.connect() 时
+self._state.conn = mysql.connect(db=self.database, **self.connect_params)
+```
+> 执行命令时
+```
+db.execute 时，会执行 self.execute_sql，执行 self.execute_sql 时会先获取 self.cursor
+获取 cursor 时，如果 self.autoconnect 设置的为 True，则会自动 connect
+```
+## 8 传送门
+
+> * [详解 Python 数据库的 Connection、Cursor 两大对象](https://blog.csdn.net/guofeng93/article/details/53994112)
+> * [ThreadLocal](https://www.liaoxuefeng.com/wiki/897692888725344/923057354442720)
