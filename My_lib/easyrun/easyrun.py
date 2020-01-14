@@ -50,6 +50,7 @@ def run_timeout(command, timeout=10):
             return Result(command=command, retcode=124, output="timeout")
         time.sleep(0.1)
     output, _ = process.communicate()
+    output = output.strip('\n')
     return Result(command=command, retcode=process.returncode, output=output)
 
 
@@ -105,9 +106,15 @@ if __name__ == '__main__':
 
     print('---[ capture ]---')
     print(len(run_capture('ls').output))
+    print('---[ capture ]ls---')
+    print(run_capture('ls').output)
 
     print('---[ limited capture ]---')
     print(run_capture_limited('ls', maxlines=2).output)
 
     print('---[ timeout ]---')
     print(run_timeout('curl -s www.baidu.com', timeout=3).output)
+    print('---[ timeout ]ls---')
+    print(run_timeout('ls', timeout=3).output)
+    print('---[ timeout & capture ]ls---')
+    print(run_capture('ls').output == run_timeout('ls', timeout=3).output)
