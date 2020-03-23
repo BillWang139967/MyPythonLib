@@ -27,6 +27,7 @@
 * [5 官方文档](#5-官方文档)
 * [6 实践](#6-实践)
     * [6.1 user](#61-user)
+    * [6.2 School](#62-school)
 * [7 源码说明](#7-源码说明)
 * [8 传送门](#8-传送门)
 
@@ -615,6 +616,113 @@ User(id：3 email：xaviercastillo@robinson.com username：Victoria Turner passw
 -------------DELETE
 1
 2
+```
+### 6.2 School
+
+```python
+# -*- coding:utf-8 -*-
+
+#导入模块
+import peewee
+import datetime
+#建立链接
+#connect = peewee.MySQLDatabase(
+#    database = 'first_database', #数据库名字
+#    host = 'localhost',  #数据库地址
+#    user = 'root',  #数据库用户
+#    passwd = '123'  #对应用户密码
+#    )
+
+
+#建立链接
+connect = peewee.SqliteDatabase("test.db") #运行该程序后就能在当前目录下创建“test.db”数据库
+
+#创建表
+    #类名必须大写
+    #peewee创建数据库的时候，默认会添加主键id
+    #peewee创建数据库字段默认不可为空
+class School(peewee.Model):
+    name = peewee.CharField(max_length = 32) # 相当于在数据库中定义了 name char(32)
+    address = peewee.CharField(max_length = 32) # 相当于在数据库定义了 address char(32)
+    age = peewee.IntegerField() # age int
+    birthday = peewee.DateTimeField() #日期
+
+    #将表和数据库连接
+    class Meta:
+        database = connect
+
+if __name__ =="__main__":
+    # peewee的增删改查
+    #注意：peewee最主要的是作增删改，查一般都用sql语句，查逻辑复杂ORM模型适应不了，
+    #     后面在介绍查的部分时会给出用sql语句查询的例子
+
+#-----------------------------------------------------------------------------
+    #增
+        # 第一种方法，常用
+    T = School() #实例化表的类型
+    T.name = 'lishi'
+    T.age = 40
+    T.address = 'shayang'
+    T.birthday = datetime.datetime.now() #通过时间模块输入当前时间值
+    T.save()   #提交
+        #第二种方法
+    T = School().insert(
+        name = 'shayang',
+        age = 40,
+        birthday = datetime.datetime.now(),
+        address = 'jinmen'
+    )
+    T.execute()  #执行
+#-------------------------------------------------------------------------------
+    #删
+    T =School.delete().where(School.id == 1)
+    T.execute()  #执行指令
+#-------------------------------------------------------------------------------
+
+    #改
+        #第一种方法，不常用
+    T =School.update(name = "beifang").where(School.id == 5)
+    T.execute()
+        #第二种方法，常用
+    T = School().get(id = 4)  #实例化表的类型
+    T.name = 'mingzhu'
+    T.save()
+
+#-------------------------------------------------------------------------------
+
+    #查
+        #查所有
+            #第一种方法
+    T_list = School.select()
+    #print(T_list)
+    for T in T_list:
+        #print(T)
+        print(T.name,T.age,T.address,T.birthday) #输出的第一个 u' 代表 unicode编码
+
+            #第二种方法,按照给定的标准按顺序排列
+    T_list = School.select().order_by(School.age)
+    for T in T_list:
+        print(T.name,T.age,T.address,T.birthday)
+
+        #查多条,给定一个筛选条件
+    T_list = School.select().where(School.age == 50)
+    for T in T_list:
+        print(T.name,T.age,T.address,T.birthday)
+
+        #查一条
+    print "---------------------------"
+    T= School.get(id=3)
+    print(T.id,T.name,T.age,T.address,T.birthday)
+
+#综合使用举例：
+    #综合举例
+    T_list = School.select().where(School.name == "lishi",School.age == 40)
+    for T in T_list:
+        print(T.name)  #找不出则为空
+
+#一般查，使用SQL语句，下面是用的Mysql语句，在sqlite里面无用
+    sql = "select * from school where name = \'lishi\' or age = 40"
+    help(School.raw(sql))
 ```
 
 ## 7 源码说明
