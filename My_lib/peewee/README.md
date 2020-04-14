@@ -643,7 +643,7 @@ User.insert_many(fake_users).execute()
 """ RETRIEVE/GET/FIND """
 print("-------------RETRIEVE/GET/FIND")
 
-user = User().select().where(User.id != 1).get()
+user = User.select().where(User.id != 1).get()
 print(user)
 # User(id：2 email：bcalderon@hotmail.com username：Victoria Sullivan password：off createTime: 2019-08-15 23:25:59)
 

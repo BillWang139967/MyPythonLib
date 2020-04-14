@@ -77,11 +77,11 @@ User.insert_many(fake_users).execute()
 
 """ RETRIEVE/GET/FIND """
 print("-------------RETRIEVE/GET/FIND")
-user = User().select().where(User.id == 1).get()
+user = User.select().where(User.id == 1).get()
 if user.check_password(password):
     print "check password OK"
 
-user = User().select().where(User.id != 1).get()
+user = User.select().where(User.id != 1).get()
 print(user)
 user = User.select().where(User.username.contains("meet")).get()
 print(user)
