@@ -14,14 +14,20 @@
         * [第一种方式：](#第一种方式)
         * [第二种方式：](#第二种方式)
     * [2.2 操作数据库](#22-操作数据库)
-        * [增](#增)
-        * [删](#删)
-        * [改](#改)
-        * [查](#查)
+        * [2.2.1 增(object.save,Model.create,Model.insert)](#221-增objectsavemodelcreatemodelinsert)
+        * [2.2.2 删(object.delete_instance,Model.delete)](#222-删objectdelete_instancemodeldelete)
+        * [2.2.3 改(Model.update, object.save)](#223-改modelupdate-objectsave)
+            * [peewee 的 update 是原子的](#peewee-的-update-是原子的)
+            * [update 的几种方法](#update-的几种方法)
+            * [无则插入，有则更新](#无则插入有则更新)
+        * [2.2.4 查(单条 Model.get)](#224-查单条-modelget)
+    * [2.3 执行裸 SQL](#23-执行裸-sql)
+    * [2.4 一些有用的拓展](#24-一些有用的拓展)
+        * [2.4.1 模型转换成字典](#241-模型转换成字典)
+        * [2.4.2 从数据库生成模型](#242-从数据库生成模型)
 * [3 连接池](#3-连接池)
     * [3.1 为什么要显式的关闭连接](#31-为什么要显式的关闭连接)
     * [3.2 推荐姿势](#32-推荐姿势)
-        * [手动关闭实例](#手动关闭实例)
 * [4 常见问题](#4-常见问题)
     * [4.1 OperationalError: (2013, 'Lost connection to MySQL server during query')](#41-operationalerror-2013-lost-connection-to-mysql-server-during-query)
 * [5 官方文档](#5-官方文档)
@@ -305,11 +311,11 @@ class Person(BaseModel):
 ### 2.2 操作数据库
 
 操作数据库，就是增、删、改和查。
-#### 增
-直接创建示例，然后使用 save() 就添加了一条新数据
+#### 2.2.1 增(object.save,Model.create,Model.insert)
 ```
 # 第一种方法插入单条数据
 # 不会返回插入的自增 pk，而是成功返回 1，失败返回 0；
+# 直接创建示例，然后使用 save() 就添加了一条新数据
 p = Person(name='liuchungui', birthday='1990-12-20', is_relative=True)
 p.save()
 
@@ -338,7 +344,12 @@ def create():
     print('uid=%d' % uid)
 
 ```
-#### 删
+#### 2.2.2 删(object.delete_instance,Model.delete)
+删除有两种方式
+
+> * 使用 object.delete_instance
+> * 使用 Model.delete
+
 ```
 使用 delete().where().execute() 进行删除，where() 是条件，execute() 负责执行语句。若是已经查询出来的实例，则直接使用 delete_instance() 删除。
 # 删除姓名为 perter 的数据
@@ -350,7 +361,7 @@ p.id = 1
 p.save()
 p.delete_instance()
 ```
-#### 改
+#### 2.2.3 改(Model.update, object.save)
 
 若是，已经添加过数据的的实例或查询到的数据实例，且表拥有 primary key 时，此时使用 save() 就是修改数据；若是未拥有实例，则使用 update().where() 进行更新数据。
 ```
@@ -363,7 +374,69 @@ p.save()
 q = Person.update({Person.birthday: "1983-12-21"}).where(Person.name == 'liuchungui')
 q.execute()
 ```
-#### 查
+##### peewee 的 update 是原子的
+
+需要注意的是，在使用 update 的时候千万不要在 Python 中使用计算再更新，要使用 SQL 语句来更新，这样才能具有原子性。
+
+> 错误做法
+```
+>>> for stat in Stat.select().where(Stat.url == request.url):
+...     stat.counter += 1
+...     stat.save()
+```
+> 正确做法
+```
+>>> query = Stat.update(counter=Stat.counter + 1).where(Stat.url == request.url)
+>>> query.execute()
+```
+##### update 的几种方法
+```
+# 方法一
+Person.update({Person.Name: '赵六', Person.Remarks: 'abc'}).where(Person.Name=='王五').execute()
+
+# 方法二
+Person.update({'Name': '赵六', 'Remarks': 'abc'}).where(Person.Name=='张三').execute()
+
+# 方法三
+Person.update(Name='赵六', Remarks='abc').where(Person.Name=='李四').execute()
+Person.update(Person.age=Person.age+1).where(Person.Name=='李四').execute()
+```
+##### 无则插入，有则更新
+两种方式
+
+存在更新，不存在则插入 replace 与 on_conflict_replace() 是等效的
+```
+class User(Model):
+    username = TextField(unique=True)
+    last_login = DateTimeField(null=True)
+
+# last_login值将更新，
+user_id = User.replace(username='the-user', last_login=datetime.now()).execute()
+user_id = User.insert(username='the-user', last_login=datetime.now()).on_conflict_replace().execute()
+```
+
+
+
+MySQL 提供了一种独有的语法 ON DUPLICATE KEY UPDATE 可以使用以下方法实现。
+```
+class User(Model):
+    username = TextField(unique=True)
+    last_login = DateTimeField(null=True)
+    login_count = IntegerField()
+
+#插入一个新用户
+User.create(username='huey', login_count=0)
+
+# 模拟用户登录.
+登录计数和时间戳，要么正确创建，要么更新。
+
+now = datetime.now()
+rowid = User.insert(username='huey', last_login=now, login_count=1)
+         .on_conflict(preserve=[User.last_login],  # 使用我们将插入的值
+         .update={User.login_count: User.login_count + 1}
+         ).execute()
+```
+#### 2.2.4 查(单条 Model.get)
 单条数据使用 Person.get() 就行了，也可以使用 Person.select().where().get()。若是查询多条数据，则使用 Person.select().where()，去掉 get() 就行了。语法很直观，select() 就是查询，where 是条件，get 是获取第一条数据。
 ```
 # 查询单条数据
@@ -379,6 +452,26 @@ persons = Person.select().where(Person.is_relative == True)
 for p in persons:
     print(p.name, p.birthday, p.is_relative)
 ```
+### 2.3 执行裸 SQL
+```
+database.execute_sql()
+```
+### 2.4 一些有用的拓展
+#### 2.4.1 模型转换成字典
+
+除了在查询的时候使用 model.dicts 以外，还可以使用 model_to_dict(model) 这个函数。
+```
+>>> user = User.create(username='meetbill')
+>>> model_to_dict(user)
+{'id': 1, 'username': 'meetbill'}
+```
+#### 2.4.2 从数据库生成模型
+
+可以使用 pwiz 工具从已有的数据库产生 peewee 的模型文件
+```
+python -m pwiz -e postgresql charles_blog > blog_models.py
+```
+
 ## 3 连接池
 
 ```
@@ -469,14 +562,8 @@ def _close(self, conn, close_conn=False):
 
 ### 3.2 推荐姿势
 
-每次操作完数据库就关闭连接实例
+连接池自动重连，详细看 [butterfly](https://github.com/meetbill/butterfly) 数据库部分
 
-#### 手动关闭实例
-```
- if not database.is_closed():
-        database.close()
-
-```
 ## 4 常见问题
 ### 4.1 OperationalError: (2013, 'Lost connection to MySQL server during query')
 
