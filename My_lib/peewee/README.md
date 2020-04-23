@@ -21,6 +21,14 @@
             * [update 的几种方法](#update-的几种方法)
             * [无则插入，有则更新](#无则插入有则更新)
         * [2.2.4 查(单条 Model.get)](#224-查单条-modelget)
+            * [get](#get)
+            * [get_or_none](#get_or_none)
+            * [get_by_id](#get_by_id)
+            * [select](#select)
+            * [获取记录条数 count 方法](#获取记录条数-count-方法)
+            * [排序 order_by 方法](#排序-order_by-方法)
+            * [查询条件](#查询条件)
+            * [支持的比较符](#支持的比较符)
     * [2.3 执行裸 SQL](#23-执行裸-sql)
     * [2.4 一些有用的拓展](#24-一些有用的拓展)
         * [2.4.1 模型转换成字典](#241-模型转换成字典)
@@ -437,6 +445,8 @@ rowid = User.insert(username='huey', last_login=now, login_count=1)
          ).execute()
 ```
 #### 2.2.4 查(单条 Model.get)
+
+##### get
 单条数据使用 Person.get() 就行了，也可以使用 Person.select().where().get()。若是查询多条数据，则使用 Person.select().where()，去掉 get() 就行了。语法很直观，select() 就是查询，where 是条件，get 是获取第一条数据。
 ```
 # 查询单条数据
@@ -452,6 +462,105 @@ persons = Person.select().where(Person.is_relative == True)
 for p in persons:
     print(p.name, p.birthday, p.is_relative)
 ```
+
+##### get_or_none
+```
+如果当获取的结果不存在时，不想报错，可以使用 Model.get_or_none() 方法，会返回 None，参数和 get 方法一致。
+```
+##### get_by_id
+
+对于主键查找，还可以使用快捷方法 Model.get_by_id()
+```
+Person.get_by_id(1)
+```
+##### select
+
+使用 Model.select() 查询获取多条数据。select 后可以添加 where 条件，如果不加则查询整个表。
+
+> 语法：
+```
+select(*fields)
+```
+> 参数：
+```
+fields：需要查询的字段，不传时返回所有字段。传递方式如下例所示。
+```
+> 示例：
+```
+ps = Person.select(Person.Name, Person.Age).where(Person.Name == '张三')
+```
+select() 返回结果是一个 ModelSelect 对象，该对象可迭代、索引、切片。当查询不到结果时，不报错，返回 None。并且 select() 结果是延时返回的。如果想立即执行，可以调用 execute() 方法。
+
+> 注意
+```
+注意：where 中的条件不支持 Name='张三' 这种写法，只能是 Person.Name == '张三'。
+```
+##### 获取记录条数 count 方法
+
+> 使用 .count() 方法可以获取记录条数。
+```
+Person.select().count()
+```
+也许你会问，用 len() 方法可以吗？当然也是可以的，但是是一种不可取的方法。
+```
+len(Person.select())
+```
+这两者的实现方式天差地远。用 count() 方法，执行的 SQL 语句是：
+```
+('SELECT COUNT(1) FROM (SELECT 1 FROM "person" AS "t1") AS "_wrapped"', [])
+```
+而用 len() 方法执行的 SQL 语句却是：
+```
+('SELECT "t1"."id", "t1"."Name", "t1"."Age", "t1"."Birthday", "t1"."Remarks" FROM "person" AS "t1"', [])
+
+```
+直接返回所有记录然后获取长度，这种方法是非常不可取的。
+##### 排序 order_by 方法
+```
+Person.select().order_by(Person.Age)
+```
+> 排序默认是升序排列，也可以用 + 或 asc() 来明确表示是升序排列：
+```
+Person.select().order_by(+Person.Age)
+Person.select().order_by(Person.Age.asc())
+```
+> 用 - 或 desc() 来表示降序：
+```
+Person.select().order_by(-Person.Age)
+Person.select().order_by(Person.Age.desc())
+```
+如要对多个字段进行排序，逗号分隔写就可以了
+##### 查询条件
+
+当查询条件不止一个，需要使用逻辑运算符连接，而 Python 中的 and、or 在 Peewee 中是不支持的，此时我们需要使用 Peewee 封装好的运算符，如下：
+
+|逻辑符|含义|样例|
+|---|---|---|
+|&|and|Person.select().where((Person.Name == '张三') & (Person.Age == 30))|
+|`|`|or|Person.select().where((Person.Name == '张三') \| (Person.Age == 30))|
+|~|not|Person.select().where(~Person.Name == '张三')|
+
+```
+特别注意：有多个条件时，每个条件必须用 () 括起来。
+```
+> 当条件全为 and 时，也可以用逗号分隔，get 和 select 中都可以
+```
+Person.get(Person.Name == '张三', Person.Age == 30)
+```
+##### 支持的比较符
+```
+运算符	含义
+==	等于
+<	小于
+<=	小于等于
+>	大于
+>=	大于等于
+!=	不等于
+<<	x in y，其中 y 是列表或查询
+>>	x is y, 其中 y 可以是 None
+%	x like y
+```
+
 ### 2.3 执行裸 SQL
 ```
 database.execute_sql()
