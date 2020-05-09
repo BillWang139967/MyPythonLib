@@ -26,6 +26,7 @@
         * [2.2.4 查(单条 Model.get)](#224-查单条-modelget)
             * [get](#get)
             * [get_or_none](#get_or_none)
+        * [get_or_create](#get_or_create)
             * [get_by_id](#get_by_id)
             * [select](#select)
             * [获取记录条数 count 方法](#获取记录条数-count-方法)
@@ -482,6 +483,28 @@ for p in persons:
 ```
 如果当获取的结果不存在时，不想报错，可以使用 Model.get_or_none() 方法，会返回 None，参数和 get 方法一致。
 ```
+#### get_or_create
+Peewee 有一个辅助方法来执行“获取/创建”类型的操作： Model.get_or_create() 首先尝试检索匹配的行。如果失败，将创建一个新行。
+```
+p, created = Person.get_or_create(Name='赵六', defaults={'Age': 80, 'Birthday': date(1940, 1, 1)})
+print(p, created)
+```
+
+```
+# SQL 语句
+('SELECT "t1"."id", "t1"."Name", "t1"."Age", "t1"."Birthday", "t1"."Remarks" FROM "person" AS "t1" WHERE ("t1"."Name" = ?) LIMIT ? OFFSET ?', ['赵六', 1, 0])
+('BEGIN', None)
+('INSERT INTO "person" ("Name", "Age", "Birthday") VALUES (?, ?, ?)', ['赵六', 80, datetime.date(1940, 1, 1)])
+```
+> 参数：
+```
+get_or_create 的参数是 **kwargs，其中 defaults 为非查询条件的参数，剩余的为尝试检索匹配的条件，这个看执行时的 SQL 语句就一目了然了。对于“创建或获取”类型逻辑，通常会依赖唯一 约束或主键来防止创建重复对象。但这并不是强制的，比如例子中，我以 Name 为条件，而 Name 并非主键。只是最好不要这样做。
+```
+> 返回值：
+```
+get_or_create 方法有两个返回值，第一个是“获取/创建”的模型实例，第二个是是否新创建。
+```
+
 ##### get_by_id
 
 对于主键查找，还可以使用快捷方法 Model.get_by_id()
