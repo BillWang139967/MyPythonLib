@@ -26,7 +26,7 @@
         * [2.2.4 查(单条 Model.get)](#224-查单条-modelget)
             * [get](#get)
             * [get_or_none](#get_or_none)
-        * [get_or_create](#get_or_create)
+            * [get_or_create](#get_or_create)
             * [get_by_id](#get_by_id)
             * [select](#select)
             * [获取记录条数 count 方法](#获取记录条数-count-方法)
@@ -483,7 +483,7 @@ for p in persons:
 ```
 如果当获取的结果不存在时，不想报错，可以使用 Model.get_or_none() 方法，会返回 None，参数和 get 方法一致。
 ```
-#### get_or_create
+##### get_or_create
 Peewee 有一个辅助方法来执行“获取/创建”类型的操作： Model.get_or_create() 首先尝试检索匹配的行。如果失败，将创建一个新行。
 ```
 p, created = Person.get_or_create(Name='赵六', defaults={'Age': 80, 'Birthday': date(1940, 1, 1)})
@@ -514,6 +514,9 @@ Person.get_by_id(1)
 ##### select
 
 使用 Model.select() 查询获取多条数据。select 后可以添加 where 条件，如果不加则查询整个表。
+
+> * select 代表 sql 语句中 select 后面的语句表示要展示的字段
+> * where 代表 where 条件语句 得到一个数据集合
 
 > 语法：
 ```
