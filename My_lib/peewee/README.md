@@ -11,8 +11,11 @@
         * [日期字段](#日期字段)
 * [2 实践](#2-实践)
     * [2.1 定义 Model，建立数据库](#21-定义-model建立数据库)
-        * [第一种方式：](#第一种方式)
-        * [第二种方式：](#第二种方式)
+        * [创建 Model](#创建-model)
+            * [第一种方式：](#第一种方式)
+            * [第二种方式：](#第二种方式)
+        * [Model 定义](#model-定义)
+            * [复合主键约束(CompositeKey)](#复合主键约束compositekey)
     * [2.2 操作数据库](#22-操作数据库)
         * [2.2.1 增(object.save,Model.create,Model.insert)](#221-增objectsavemodelcreatemodelinsert)
         * [2.2.2 删(object.delete_instance,Model.delete)](#222-删objectdelete_instancemodeldelete)
@@ -227,7 +230,9 @@ for message in some_user.received_messages:
 
 在使用的时候，根据需求先定义好 Model，然后可以通过 create_tables() 创建表，若是已经创建好数据库表了，可以通过 python -m pwiz 脚本工具直接创建 Model。
 
-#### 第一种方式：
+#### 创建 Model
+
+##### 第一种方式：
 
 先定义 Model，然后通过 db.create_tables() 创建或 Model.create_table() 创建表。
 例如，我们需要建一个 Person 表，里面有 name、birthday 和 is_relative 三个字段，我们定义的 Model 如下：
@@ -281,7 +286,7 @@ mysql> desc person;
 ```
 如果使用 autoconnect = True（默认值）初始化数据库，则在使用数据库之前无需显式连接到数据库。 明确地管理连接被认为是最佳实践，因此可以考虑禁用自动连接行为。
 ```
-#### 第二种方式：
+##### 第二种方式：
 已经存在过数据库，则直接通过 python -m pwiz 批量创建 Model。
 
 例如，上面我已经创建好了 test 库，并且创建了 person 表，表中拥有 id、name、birthday 和 is_relative 字段。那么，我可以使用下面命令：
@@ -314,6 +319,16 @@ class Person(BaseModel):
     class Meta:
         table_name = 'person'
 
+```
+#### Model 定义
+
+##### 复合主键约束(CompositeKey)
+```
+class Person(Model):
+    first = CharField()
+    last = CharField()
+    class Meta:
+        primary_key = CompositeKey('first', 'last')
 ```
 
 ### 2.2 操作数据库
