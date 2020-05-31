@@ -12,10 +12,11 @@
 * [2 实践](#2-实践)
     * [2.1 定义 Model，建立数据库](#21-定义-model建立数据库)
         * [创建 Model](#创建-model)
-            * [第一种方式：](#第一种方式)
-            * [第二种方式：](#第二种方式)
+            * [第一种方式](#第一种方式)
+            * [第二种方式](#第二种方式)
         * [Model 定义](#model-定义)
             * [复合主键约束(CompositeKey)](#复合主键约束compositekey)
+            * [联合唯一索引(indexes)](#联合唯一索引indexes)
     * [2.2 操作数据库](#22-操作数据库)
         * [2.2.1 增(object.save,Model.create,Model.insert)](#221-增objectsavemodelcreatemodelinsert)
         * [2.2.2 删(object.delete_instance,Model.delete)](#222-删objectdelete_instancemodeldelete)
@@ -34,9 +35,10 @@
             * [查询条件](#查询条件)
             * [支持的比较符](#支持的比较符)
     * [2.3 执行裸 SQL](#23-执行裸-sql)
-    * [2.4 一些有用的拓展](#24-一些有用的拓展)
-        * [2.4.1 模型转换成字典](#241-模型转换成字典)
-        * [2.4.2 从数据库生成模型](#242-从数据库生成模型)
+    * [2.4 查看 ORM 对应的原生 SQL 语句](#24-查看-orm-对应的原生-sql-语句)
+    * [2.5 一些有用的拓展](#25-一些有用的拓展)
+        * [2.5.1 模型转换成字典](#251-模型转换成字典)
+        * [2.5.2 从数据库生成模型](#252-从数据库生成模型)
 * [3 连接池](#3-连接池)
     * [3.1 为什么要显式的关闭连接](#31-为什么要显式的关闭连接)
     * [3.2 推荐姿势](#32-推荐姿势)
@@ -233,7 +235,7 @@ for message in some_user.received_messages:
 
 #### 创建 Model
 
-##### 第一种方式：
+##### 第一种方式
 
 先定义 Model，然后通过 db.create_tables() 创建或 Model.create_table() 创建表。
 例如，我们需要建一个 Person 表，里面有 name、birthday 和 is_relative 三个字段，我们定义的 Model 如下：
@@ -287,7 +289,7 @@ mysql> desc person;
 ```
 如果使用 autoconnect = True（默认值）初始化数据库，则在使用数据库之前无需显式连接到数据库。 明确地管理连接被认为是最佳实践，因此可以考虑禁用自动连接行为。
 ```
-##### 第二种方式：
+##### 第二种方式
 已经存在过数据库，则直接通过 python -m pwiz 批量创建 Model。
 
 例如，上面我已经创建好了 test 库，并且创建了 person 表，表中拥有 id、name、birthday 和 is_relative 字段。那么，我可以使用下面命令：
@@ -328,9 +330,18 @@ class Person(BaseModel):
 class Person(Model):
     first = CharField()
     last = CharField()
-    class Meta:
+    class Meta(object):
         primary_key = CompositeKey('first', 'last')
 ```
+##### 联合唯一索引(indexes)
+```
+class Meta(object):
+    indexes = (
+        (('字段1', '字段2'), True),    # 字段1与字段2整体作为索引，True 代表唯一索引
+        (('字段1', '字段2'), False),   # 字段1与字段2整体作为索引，False 代表普通索引
+    )
+```
+需要注意的是，上面语法，三层元组嵌套， 元组你懂得， 一个元素时需要加个 , 逗号。 别忘了。
 
 ### 2.2 操作数据库
 
@@ -603,11 +614,28 @@ Person.get(Person.Name == '张三', Person.Age == 30)
 ```
 
 ### 2.3 执行裸 SQL
+
+> 执行原生 SQL 1 
 ```
-database.execute_sql()
+# 注意，传数据用参数，不要用字符串拼接（防SQL注入）
+for owner in Owner.raw('select * from owner where name=%s', 'Alice'):
+    print(owner.name)
 ```
-### 2.4 一些有用的拓展
-#### 2.4.1 模型转换成字典
+
+> 执行原生 SQL 2
+```
+database.execute_sql().fetchall()
+```
+
+### 2.4 查看 ORM 对应的原生 SQL 语句
+
+> 后缀 .sql() 打印对应原生 sql
+```
+.....ORM 语句.sql() 
+```
+
+### 2.5 一些有用的拓展
+#### 2.5.1 模型转换成字典
 
 除了在查询的时候使用 model.dicts 以外，还可以使用 model_to_dict(model) 这个函数。
 ```
@@ -615,7 +643,7 @@ database.execute_sql()
 >>> model_to_dict(user)
 {'id': 1, 'username': 'meetbill'}
 ```
-#### 2.4.2 从数据库生成模型
+#### 2.5.2 从数据库生成模型
 
 可以使用 pwiz 工具从已有的数据库产生 peewee 的模型文件
 ```
