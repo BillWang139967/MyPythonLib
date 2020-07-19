@@ -34,6 +34,7 @@
             * [排序 order_by 方法](#排序-order_by-方法)
             * [查询条件](#查询条件)
             * [支持的比较符](#支持的比较符)
+            * [如何根据查询项，设置不同的搜索条件](#如何根据查询项设置不同的搜索条件)
     * [2.3 执行裸 SQL](#23-执行裸-sql)
     * [2.4 查看 ORM 对应的原生 SQL 语句](#24-查看-orm-对应的原生-sql-语句)
     * [2.5 一些有用的拓展](#25-一些有用的拓展)
@@ -612,19 +613,41 @@ Person.get(Person.Name == '张三', Person.Age == 30)
 >>	x is y, 其中 y 可以是 None
 %	x like y
 ```
+##### 如何根据查询项，设置不同的搜索条件
+> 搜索项支持 job_reqid，job_id 等
+```
+query_cmd = job_model.Job.select()
+expressions = []
+if job_reqid is not None:
+    expressions.append(peewee.NodeList((job_model.Job.job_reqid, peewee.SQL('='), job_reqid)))
+
+if job_id is not None:
+    expressions.append(peewee.NodeList((job_model.Job.job_id, peewee.SQL('='), job_id)))
+
+...
+
+if len(expressions):
+    query_cmd = query_cmd.where(*expressions)
+
+# 用于返回分页总页数
+record_count = query_cmd.count()
+
+# 判断是否需要分页返回数据
+if page_index is None:
+    record_list = query_cmd.order_by(job_model.Job.c_time.desc())
+else:
+    record_list = query_cmd.order_by(job_model.Job.c_time.desc()).paginate(int(page_index), int(page_size))
+```
 
 ### 2.3 执行裸 SQL
 
-> 执行原生 SQL 1 
-```
-# 注意，传数据用参数，不要用字符串拼接（防SQL注入）
-for owner in Owner.raw('select * from owner where name=%s', 'Alice'):
-    print(owner.name)
-```
-
-> 执行原生 SQL 2
 ```
 database.execute_sql().fetchall()
+```
+
+> 例子
+```
+record_list = db.my_database.execute_sql("select ...").fetchall()
 ```
 
 ### 2.4 查看 ORM 对应的原生 SQL 语句
