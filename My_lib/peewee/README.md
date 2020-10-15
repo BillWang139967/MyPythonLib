@@ -15,16 +15,16 @@
             * [第一种方式](#第一种方式)
             * [第二种方式](#第二种方式)
         * [Model 定义](#model-定义)
-            * [复合主键约束(CompositeKey)](#复合主键约束compositekey)
-            * [联合唯一索引(indexes)](#联合唯一索引indexes)
+            * [复合主键约束 (CompositeKey)](#复合主键约束-compositekey)
+            * [联合唯一索引 (indexes)](#联合唯一索引-indexes)
     * [2.2 操作数据库](#22-操作数据库)
-        * [2.2.1 增(object.save,Model.create,Model.insert)](#221-增objectsavemodelcreatemodelinsert)
-        * [2.2.2 删(object.delete_instance,Model.delete)](#222-删objectdelete_instancemodeldelete)
-        * [2.2.3 改(Model.update, object.save)](#223-改modelupdate-objectsave)
+        * [2.2.1 增 (object.save,Model.create,Model.insert)](#221-增-objectsavemodelcreatemodelinsert)
+        * [2.2.2 删 (object.delete_instance,Model.delete)](#222-删-objectdelete_instancemodeldelete)
+        * [2.2.3 改 (Model.update, object.save)](#223-改-modelupdate-objectsave)
             * [peewee 的 update 是原子的](#peewee-的-update-是原子的)
             * [update 的几种方法](#update-的几种方法)
             * [无则插入，有则更新](#无则插入有则更新)
-        * [2.2.4 查(单条 Model.get)](#224-查单条-modelget)
+        * [2.2.4 查（单条 Model.get)](#224-查单条-modelget)
             * [get](#get)
             * [get_or_none](#get_or_none)
             * [get_or_create](#get_or_create)
@@ -40,6 +40,7 @@
     * [2.5 一些有用的拓展](#25-一些有用的拓展)
         * [2.5.1 模型转换成字典](#251-模型转换成字典)
         * [2.5.2 从数据库生成模型](#252-从数据库生成模型)
+        * [2.5.3 创建自己的 Field](#253-创建自己的-field)
 * [3 连接池](#3-连接池)
     * [3.1 为什么要显式的关闭连接](#31-为什么要显式的关闭连接)
     * [3.2 推荐姿势](#32-推荐姿势)
@@ -326,7 +327,7 @@ class Person(BaseModel):
 ```
 #### Model 定义
 
-##### 复合主键约束(CompositeKey)
+##### 复合主键约束 (CompositeKey)
 ```
 class Person(Model):
     first = CharField()
@@ -334,12 +335,12 @@ class Person(Model):
     class Meta(object):
         primary_key = CompositeKey('first', 'last')
 ```
-##### 联合唯一索引(indexes)
+##### 联合唯一索引 (indexes)
 ```
 class Meta(object):
     indexes = (
-        (('字段1', '字段2'), True),    # 字段1与字段2整体作为索引，True 代表唯一索引
-        (('字段1', '字段2'), False),   # 字段1与字段2整体作为索引，False 代表普通索引
+        (('字段 1', '字段 2'), True),    # 字段 1 与字段 2 整体作为索引，True 代表唯一索引
+        (('字段 1', '字段 2'), False),   # 字段 1 与字段 2 整体作为索引，False 代表普通索引
     )
 ```
 需要注意的是，上面语法，三层元组嵌套， 元组你懂得， 一个元素时需要加个 , 逗号。 别忘了。
@@ -347,7 +348,7 @@ class Meta(object):
 ### 2.2 操作数据库
 
 操作数据库，就是增、删、改和查。
-#### 2.2.1 增(object.save,Model.create,Model.insert)
+#### 2.2.1 增 (object.save,Model.create,Model.insert)
 ```
 # 第一种方法插入单条数据
 # 不会返回插入的自增 pk，而是成功返回 1，失败返回 0；
@@ -380,7 +381,7 @@ def create():
     print('uid=%d' % uid)
 
 ```
-#### 2.2.2 删(object.delete_instance,Model.delete)
+#### 2.2.2 删 (object.delete_instance,Model.delete)
 删除有两种方式
 
 > * 使用 object.delete_instance
@@ -397,7 +398,7 @@ p.id = 1
 p.save()
 p.delete_instance()
 ```
-#### 2.2.3 改(Model.update, object.save)
+#### 2.2.3 改 (Model.update, object.save)
 
 若是，已经添加过数据的的实例或查询到的数据实例，且表拥有 primary key 时，此时使用 save() 就是修改数据；若是未拥有实例，则使用 update().where() 进行更新数据。
 ```
@@ -446,7 +447,7 @@ class User(Model):
     username = TextField(unique=True)
     last_login = DateTimeField(null=True)
 
-# last_login值将更新，
+# last_login 值将更新，
 user_id = User.replace(username='the-user', last_login=datetime.now()).execute()
 user_id = User.insert(username='the-user', last_login=datetime.now()).on_conflict_replace().execute()
 ```
@@ -463,7 +464,7 @@ class User(Model):
 #插入一个新用户
 User.create(username='huey', login_count=0)
 
-# 模拟用户登录.
+# 模拟用户登录。
 登录计数和时间戳，要么正确创建，要么更新。
 
 now = datetime.now()
@@ -472,7 +473,7 @@ rowid = User.insert(username='huey', last_login=now, login_count=1)
          .update={User.login_count: User.login_count + 1}
          ).execute()
 ```
-#### 2.2.4 查(单条 Model.get)
+#### 2.2.4 查（单条 Model.get)
 
 ##### get
 单条数据使用 Person.get() 就行了，也可以使用 Person.select().where().get()。若是查询多条数据，则使用 Person.select().where()，去掉 get() 就行了。语法很直观，select() 就是查询，where 是条件，get 是获取第一条数据。
@@ -496,7 +497,7 @@ for p in persons:
 如果当获取的结果不存在时，不想报错，可以使用 Model.get_or_none() 方法，会返回 None，参数和 get 方法一致。
 ```
 ##### get_or_create
-Peewee 有一个辅助方法来执行“获取/创建”类型的操作： Model.get_or_create() 首先尝试检索匹配的行。如果失败，将创建一个新行。
+Peewee 有一个辅助方法来执行“获取 / 创建”类型的操作： Model.get_or_create() 首先尝试检索匹配的行。如果失败，将创建一个新行。
 ```
 p, created = Person.get_or_create(Name='赵六', defaults={'Age': 80, 'Birthday': date(1940, 1, 1)})
 print(p, created)
@@ -514,7 +515,7 @@ get_or_create 的参数是 **kwargs，其中 defaults 为非查询条件的参�
 ```
 > 返回值：
 ```
-get_or_create 方法有两个返回值，第一个是“获取/创建”的模型实例，第二个是是否新创建。
+get_or_create 方法有两个返回值，第一个是“获取 / 创建”的模型实例，第二个是是否新创建。
 ```
 
 ##### get_by_id
@@ -654,7 +655,7 @@ record_list = db.my_database.execute_sql("select ...").fetchall()
 
 > 后缀 .sql() 打印对应原生 sql
 ```
-.....ORM 语句.sql() 
+.....ORM 语句.sql()
 ```
 
 ### 2.5 一些有用的拓展
@@ -671,6 +672,62 @@ record_list = db.my_database.execute_sql("select ...").fetchall()
 可以使用 pwiz 工具从已有的数据库产生 peewee 的模型文件
 ```
 python -m pwiz -e postgresql charles_blog > blog_models.py
+```
+#### 2.5.3 创建自己的 Field
+peewee 中创建自己的 Field, 主要通过继承 Field 或其子类来完成，
+
+> * 如果有 mysql 中对应的字段，则将其赋值给 db_field 即可。这里对 set, enum 并没有找到通用的字段定义，但是对具体的业务可以进行如 GenderField 这样的个性化定制。
+> * 如果没有，则使用其父类的 db_field 字段，并定义 db_value 和 python_value 两个方法来完成与数据库中数据类型之间的转化
+
+```
+# 时间戳字段
+class TimeStampField(Field):
+    db_field = 'timestamp'
+
+class SmallIntegerField(IntegerField):
+    db_field = 'smallint'
+
+class PasswordField(FixedCharField):
+
+    def __init__(self, *args, **kwargs):
+        self.max_length =64
+        super(PasswordField, self).__init__(max_length=self.max_length, *args, **kwargs)
+
+    def db_value(self, value):
+        return encrypt(value)
+
+    def python_value(self, value):
+        return encrypt(value)
+
+# 性别字段
+class GenderField(Field):
+    db_field = 'enum("f", "m")'
+```
+
+> 使用
+```
+class Base(Model):
+    class Meta:
+        database = db
+
+class Person(Base):
+    name = CharField(max_length=20, default='haha')
+    intro = TextField(default='')
+    birth = DateTimeField(default=datetime.now())
+    Married = BooleanField(default=False)
+    height = FloatField(default=0)
+    wight = DoubleField(default=0)
+    salary = DecimalField(default=0)
+    Save = BigIntegerField(default=0)
+    family = SmallIntegerField(default=0)
+    age = IntegerField(default=0)
+    username = CharField(max_length=20)
+    password = PasswordField(default='')
+    ctime = TimeStampField()
+    today = DateField(default=datetime.date(datetime.today()))
+    now = TimeField(default=datetime.today())
+    secret = BlobField(default='')
+    gender = GenderField()
 ```
 
 ## 3 连接池
@@ -927,8 +984,8 @@ connect = peewee.SqliteDatabase("test.db") #运行该程序后就能在当前目
 
 #创建表
     #类名必须大写
-    #peewee创建数据库的时候，默认会添加主键id
-    #peewee创建数据库字段默认不可为空
+    #peewee 创建数据库的时候，默认会添加主键 id
+    #peewee 创建数据库字段默认不可为空
 class School(peewee.Model):
     name = peewee.CharField(max_length = 32) # 相当于在数据库中定义了 name char(32)
     address = peewee.CharField(max_length = 32) # 相当于在数据库定义了 address char(32)
@@ -940,9 +997,9 @@ class School(peewee.Model):
         database = connect
 
 if __name__ =="__main__":
-    # peewee的增删改查
-    #注意：peewee最主要的是作增删改，查一般都用sql语句，查逻辑复杂ORM模型适应不了，
-    #     后面在介绍查的部分时会给出用sql语句查询的例子
+    # peewee 的增删改查
+    #注意：peewee 最主要的是作增删改，查一般都用 sql 语句，查逻辑复杂 ORM 模型适应不了，
+    #     后面在介绍查的部分时会给出用 sql 语句查询的例子
 
 #-----------------------------------------------------------------------------
     #增
@@ -985,14 +1042,14 @@ if __name__ =="__main__":
     #print(T_list)
     for T in T_list:
         #print(T)
-        print(T.name,T.age,T.address,T.birthday) #输出的第一个 u' 代表 unicode编码
+        print(T.name,T.age,T.address,T.birthday) #输出的第一个 u' 代表 unicode 编码
 
-            #第二种方法,按照给定的标准按顺序排列
+            #第二种方法，按照给定的标准按顺序排列
     T_list = School.select().order_by(School.age)
     for T in T_list:
         print(T.name,T.age,T.address,T.birthday)
 
-        #查多条,给定一个筛选条件
+        #查多条，给定一个筛选条件
     T_list = School.select().where(School.age == 50)
     for T in T_list:
         print(T.name,T.age,T.address,T.birthday)
@@ -1008,7 +1065,7 @@ if __name__ =="__main__":
     for T in T_list:
         print(T.name)  #找不出则为空
 
-#一般查，使用SQL语句，下面是用的Mysql语句，在sqlite里面无用
+#一般查，使用 SQL 语句，下面是用的 Mysql 语句，在 sqlite 里面无用
     sql = "select * from school where name = \'lishi\' or age = 40"
     help(School.raw(sql))
 ```
