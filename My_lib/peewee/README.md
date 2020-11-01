@@ -17,6 +17,8 @@
         * [Model 定义](#model-定义)
             * [复合主键约束 (CompositeKey)](#复合主键约束-compositekey)
             * [联合唯一索引 (indexes)](#联合唯一索引-indexes)
+        * [设置数据库](#设置数据库)
+            * [DatabaseProxy](#databaseproxy)
     * [2.2 操作数据库](#22-操作数据库)
         * [2.2.1 增 (object.save,Model.create,Model.insert)](#221-增-objectsavemodelcreatemodelinsert)
         * [2.2.2 删 (object.delete_instance,Model.delete)](#222-删-objectdelete_instancemodeldelete)
@@ -344,6 +346,56 @@ class Meta(object):
     )
 ```
 需要注意的是，上面语法，三层元组嵌套， 元组你懂得， 一个元素时需要加个 , 逗号。 别忘了。
+
+#### 设置数据库
+
+> 使用 Peewee 配置数据库的三种方式
+```
+# The usual way:
+db = SqliteDatabase('my_app.db', pragmas={'journal_mode': 'wal'})
+
+
+# Specify the details at run-time:
+db = SqliteDatabase(None)
+...
+db.init(db_filename, pragmas={'journal_mode': 'wal'})
+
+
+# Or use a placeholder:
+db = DatabaseProxy()
+...
+db.initialize(SqliteDatabase('my_app.db', pragmas={'journal_mode': 'wal'}))
+```
+[详情](http://docs.peewee-orm.com/en/latest/peewee/database.html#setting-the-database-at-run-time)
+
+##### DatabaseProxy
+
+```
+database_proxy = DatabaseProxy()  # Create a proxy for our db.
+
+class BaseModel(Model):
+    class Meta:
+        database = database_proxy  # Use proxy for our DB.
+
+class User(BaseModel):
+    username = CharField()
+
+# Based on configuration, use a different database.
+if app.config['DEBUG']:
+    database = SqliteDatabase('local.db')
+elif app.config['TESTING']:
+    database = SqliteDatabase(':memory:')
+else:
+    database = PostgresqlDatabase('mega_production_db')
+
+# Configure our proxy to use the db we specified in config.
+database_proxy.initialize(database)
+```
+仅当实际数据库驱动程序在运行时变化时才使用 DatabaseProxy
+
+如果只是连接值在运行时发生变化，例如数据库文件的路径或数据库主机，则应改用 Database.init()
+
+故 DatabaseProxy 暂时不需要使用
 
 ### 2.2 操作数据库
 
