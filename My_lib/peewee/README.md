@@ -414,8 +414,14 @@ p.save()
 p = Person.create(name='liuchungui', birthday='1990-12-20', is_relative=True)
 
 # 第三种方法插入单条数据
-# 返回值是整型，职位 id
-p = Person.insert(name='liuchungui', birthday='1990-12-20', is_relative=True)
+# 返回值是整型，值为 id
+p = Person.insert(name='liuchungui', birthday='1990-12-20', is_relative=True).execute()
+
+
+#-------------------------------------------------------------------
+# (1) create 方法内部调用 save 方法
+# (2) save 方法内部调用的 insert 方法
+#-------------------------------------------------------------------
 ```
 
 批量写数据
